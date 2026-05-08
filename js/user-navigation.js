@@ -55,27 +55,27 @@ function createUserSidebar() {
     
     const sidebar = document.createElement('div');
     sidebar.id = 'userNavigationSidebar';
-    sidebar.className = 'fixed right-0 top-0 h-full w-72 bg-gradient-to-b from-slate-900 to-slate-800 backdrop-blur-md border-l border-indigo-500/20 transform translate-x-full transition-transform duration-300 z-50 shadow-2xl';
+    sidebar.className = 'fixed right-0 top-0 h-full w-80 bg-slate-900 border-l border-white/10 transform translate-x-full transition-transform duration-300 z-[100] shadow-2xl shadow-black/50';
     
     const basePath = getBasePath();
     const user = getCurrentUser();
     
     let menuHTML = `
-        <div class="flex flex-col h-full">
+        <div class="flex flex-col h-full bg-[#0f172a]">
             <!-- Header -->
-            <div class="p-6 border-b border-indigo-500/20">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white"></i>
+            <div class="p-6 border-b border-white/5 bg-slate-900/50">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                            <i class="fas fa-user text-white text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-white">مرحباً</h2>
-                            <p class="text-xs text-indigo-300">الوحدة ${user.unitNumber}</p>
+                            <h2 class="text-xl font-black text-white leading-none">مرحباً</h2>
+                            <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-2">الوحدة ${user.unitNumber}</p>
                         </div>
                     </div>
-                    <button onclick="toggleUserSidebar()" class="text-2xl text-slate-400 hover:text-white transition-colors">
-                        <i class="fas fa-times"></i>
+                    <button onclick="toggleUserSidebar()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all">
+                        <i class="fas fa-times text-sm"></i>
                     </button>
                 </div>
             </div>
@@ -86,25 +86,25 @@ function createUserSidebar() {
     
     userNavigationMenu.forEach(item => {
         const badgeHTML = item.badge ? 
-            `<span class="text-xs px-2 py-1 bg-indigo-600 rounded-full">${item.badge}</span>` : '';
+            `<span class="text-[9px] px-2 py-0.5 bg-indigo-600 text-white rounded-full font-black uppercase ml-2">${item.badge}</span>` : '';
         const url = basePath + item.page;
         const isActive = window.location.pathname.includes(item.page);
-        const activeClass = isActive ? 'bg-indigo-600/30 border-indigo-500' : 'hover:bg-indigo-600/10';
+        const activeClass = isActive ? 'bg-indigo-600/10 border-indigo-500/50' : 'border-transparent hover:bg-white/5';
         
         menuHTML += `
-            <a href="${url}" class="block p-4 rounded-xl ${activeClass} border border-transparent hover:border-indigo-500/30 transition-all group">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600/20 rounded-lg flex items-center justify-center group-hover:bg-indigo-600/40 transition-colors">
-                        <i class="fas ${item.icon} text-indigo-400 text-lg"></i>
+            <a href="${url}" class="block p-4 rounded-2xl ${activeClass} border transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center border border-white/5 group-hover:border-indigo-500/30 transition-all">
+                        <i class="fas ${item.icon} text-slate-400 group-hover:text-indigo-400 text-lg transition-colors"></i>
                     </div>
                     <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-white">${item.name}</span>
+                        <div class="flex items-center">
+                            <span class="font-bold text-slate-200 group-hover:text-white transition-colors">${item.name}</span>
                             ${badgeHTML}
                         </div>
-                        <p class="text-xs text-slate-400 mt-1">${item.description}</p>
+                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors mt-1">${item.description}</p>
                     </div>
-                    <i class="fas fa-chevron-left text-slate-600 group-hover:text-indigo-400 transition-colors"></i>
+                    <i class="fas fa-chevron-left text-slate-700 group-hover:text-indigo-500 text-xs transition-all transform group-hover:-translate-x-1"></i>
                 </div>
             </a>
         `;

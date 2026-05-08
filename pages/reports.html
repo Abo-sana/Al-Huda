@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير الذكية | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .report-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .report-card.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+        .form-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: var(--text-main);
+            width: 100%;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        .data-table th {
+            padding: 12px 16px;
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .data-table tr {
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+        }
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .data-table td {
+            padding: 16px;
+            font-size: 0.9rem;
+        }
+        .data-table td:first-child { border-radius: 0 12px 12px 0; }
+        .data-table td:last-child { border-radius: 12px 0 0 12px; }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-4 bg-slate-900/60 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white">
+                    <i class="fas fa-file-invoice-dollar text-xl"></i>
+                </div>
+                <h1 class="text-xl font-black">مركز <span class="text-indigo-400">التقارير</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="logout()" class="text-sm font-bold text-red-400 hover:text-red-300">
+                    <i class="fas fa-sign-out-alt ml-1"></i> خروج
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-10">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Sidebar: Report Types -->
+            <div class="space-y-6">
+                <h2 class="text-lg font-bold mb-4">اختر نوع التقرير</h2>
+                
+                <div onclick="selectReport('financial')" id="btn-financial" class="report-card active glass-card p-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
+                            <i class="fas fa-money-bill-wave text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold">التقرير المالي</p>
+                            <p class="text-[10px] text-slate-500">الإيرادات والتحصيل</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="selectReport('residents')" id="btn-residents" class="report-card glass-card p-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-500">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold">بيانات السكان</p>
+                            <p class="text-[10px] text-slate-500">قائمة الوحدات والمالكين</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="selectReport('complaints')" id="btn-complaints" class="report-card glass-card p-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500">
+                            <i class="fas fa-exclamation-triangle text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold">تقرير الشكاوى</p>
+                            <p class="text-[10px] text-slate-500">تتبع المشاكل والحلول</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="selectReport('maintenance')" id="btn-maintenance" class="report-card glass-card p-5">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500">
+                            <i class="fas fa-tools text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold">تقرير الصيانة</p>
+                            <p class="text-[10px] text-slate-500">جدولة وتكاليف الصيانة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content: Filters & Data -->
+            <div class="lg:col-span-3 space-y-8">
+                
+                <!-- Advanced Filters -->
+                <section class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold flex items-center gap-2">
+                            <i class="fas fa-filter text-indigo-500"></i>
+                            تخصيص البيانات
+                        </h3>
+                        <div class="flex gap-2">
+                            <button onclick="handleExport('excel')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                <i class="fas fa-file-excel"></i> تصدير Excel
+                            </button>
+                            <button onclick="handleExport('csv')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                <i class="fas fa-file-csv"></i> تصدير CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">من تاريخ</label>
+                            <input type="date" id="date-from" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">إلى تاريخ</label>
+                            <input type="date" id="date-to" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest">الحالة</label>
+                            <select id="filter-status" class="form-input" onchange="applyFilters()">
+                                <option value="all">الكل</option>
+                                <!-- سيتم تحميل الخيارات ديناميكياً -->
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Data Preview -->
+                <section class="glass-card p-6 overflow-x-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold" id="report-title">معاينة البيانات</h3>
+                        <span id="record-count" class="text-xs font-bold text-slate-500 px-3 py-1 bg-white/5 rounded-full">-- سجل</span>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead id="table-head">
+                            <!-- سيتم التحميل ديناميكياً -->
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- سيتم التحميل ديناميكياً -->
+                        </tbody>
+                    </table>
+                    
+                    <div id="no-data" class="hidden py-12 text-center text-slate-500">
+                        <i class="fas fa-folder-open text-4xl mb-4 opacity-20"></i>
+                        <p>لا توجد بيانات تطابق هذه الفلاتر</p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/export.js"></script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/admin-navigation.js"></script>
+    
+    <script>
+        // حماية الصفحة
+        if (!protectAdminPage()) {
+            // إعادة توجيه
+        }
+
+        let currentReportType = 'financial';
+        let reportData = [];
+        let filteredData = [];
+
+        const reportConfigs = {
+            financial: {
+                title: 'تقرير المدفوعات المالي',
+                getData: () => dataManager.getPayments(),
+                columns: [
+                    { field: 'id', label: 'رقم الفاتورة' },
+                    { field: 'unitNumber', label: 'الوحدة' },
+                    { field: 'residentName', label: 'الساكن' },
+                    { field: 'month', label: 'الشهر' },
+                    { field: 'amount', label: 'المبلغ' },
+                    { field: 'status', label: 'الحالة' }
+                ],
+                statuses: ['مدفوع', 'معلق', 'متأخر']
+            },
+            residents: {
+                title: 'تقرير بيانات السكان',
+                getData: () => dataManager.getResidents(),
+                columns: [
+                    { field: 'unit', label: 'الوحدة' },
+                    { field: 'name', label: 'الاسم' },
+                    { field: 'phone', label: 'الهاتف' },
+                    { field: 'ownershipType', label: 'الملكية' },
+                    { field: 'registered', label: 'تاريخ التسجيل' }
+                ],
+                statuses: ['ملكية شخصية', 'مستأجرة']
+            },
+            complaints: {
+                title: 'تقرير الشكاوى والطلبات',
+                getData: () => dataManager.getComplaints(),
+                columns: [
+                    { field: 'id', label: 'رقم الشكوى' },
+                    { field: 'unitNumber', label: 'الوحدة' },
+                    { field: 'type', label: 'النوع' },
+                    { field: 'title', label: 'الموضوع' },
+                    { field: 'priority', label: 'الأولوية' },
+                    { field: 'status', label: 'الحالة' }
+                ],
+                statuses: ['مفتوحة', 'قيد المعالجة', 'مكتملة']
+            },
+            maintenance: {
+                title: 'تقرير الصيانة والعمليات',
+                getData: () => dataManager.getMaintenance(),
+                columns: [
+                    { field: 'id', label: 'رقم الصيانة' },
+                    { field: 'unitNumber', label: 'الوحدة' },
+                    { field: 'type', label: 'النوع' },
+                    { field: 'contractor', label: 'المقاول' },
+                    { field: 'priority', label: 'الأولوية' },
+                    { field: 'status', label: 'الحالة' }
+                ],
+                statuses: ['مجدول', 'قيد التنفيذ', 'مكتمل', 'في الانتظار']
+            }
+        };
+
+        function selectReport(type) {
+            currentReportType = type;
+            
+            // Update UI
+            document.querySelectorAll('.report-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(`btn-${type}`).classList.add('active');
+            
+            document.getElementById('report-title').textContent = reportConfigs[type].title;
+            
+            // Load Statuses
+            const statusSelect = document.getElementById('filter-status');
+            statusSelect.innerHTML = '<option value="all">جميع الحالات</option>';
+            reportConfigs[type].statuses.forEach(status => {
+                const opt = document.createElement('option');
+                opt.value = status;
+                opt.textContent = status;
+                statusSelect.appendChild(opt);
+            });
+            
+            // Load Data
+            loadReportData();
+        }
+
+        function loadReportData() {
+            reportData = reportConfigs[currentReportType].getData();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const status = document.getElementById('filter-status').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            
+            filteredData = reportData.filter(item => {
+                // Filter by Status
+                const statusField = currentReportType === 'residents' ? 'ownershipType' : 'status';
+                const matchesStatus = status === 'all' || item[statusField] === status;
+                
+                // Filter by Date (if applicable)
+                let matchesDate = true;
+                const dateField = item.date || item.registered || item.scheduledDate;
+                if (dateField) {
+                    const itemDate = new Date(dateField);
+                    if (dateFrom) matchesDate = matchesDate && itemDate >= new Date(dateFrom);
+                    if (dateTo) matchesDate = matchesDate && itemDate <= new Date(dateTo);
+                }
+                
+                return matchesStatus && matchesDate;
+            });
+            
+            renderTable();
+        }
+
+        function renderTable() {
+            const config = reportConfigs[currentReportType];
+            const head = document.getElementById('table-head');
+            const body = document.getElementById('table-body');
+            const noData = document.getElementById('no-data');
+            
+            // Render Head
+            head.innerHTML = `<tr>${config.columns.map(col => `<th>${col.label}</th>`).join('')}</tr>`;
+            
+            // Render Body
+            if (filteredData.length === 0) {
+                body.innerHTML = '';
+                noData.classList.remove('hidden');
+                document.getElementById('record-count').textContent = '0 سجل';
+                return;
+            }
+            
+            noData.classList.add('hidden');
+            document.getElementById('record-count').textContent = `${filteredData.length} سجل`;
+            
+            body.innerHTML = filteredData.map(item => `
+                <tr>
+                    ${config.columns.map(col => {
+                        let val = item[col.field] || '--';
+                        if (col.field === 'status' || col.field === 'priority' || col.field === 'ownershipType') {
+                            return `<td><span class="status-badge ${getStatusClass(val)}">${val}</span></td>`;
+                        }
+                        return `<td>${val}</td>`;
+                    }).join('')}
+                </tr>
+            `).join('');
+        }
+
+        function getStatusClass(status) {
+            const success = ['مدفوع', 'مكتمل', 'ملكية شخصية'];
+            const warning = ['معلق', 'قيد المعالجة', 'قيد التنفيذ', 'مجدول', 'مستأجرة'];
+            const danger = ['متأخر', 'في الانتظار', 'عاجلة'];
+            
+            if (success.includes(status)) return 'bg-emerald-500/10 text-emerald-500';
+            if (warning.includes(status)) return 'bg-orange-500/10 text-orange-500';
+            if (danger.includes(status)) return 'bg-red-500/10 text-red-500';
+            return 'bg-slate-500/10 text-slate-400';
+        }
+
+        function handleExport(format) {
+            if (filteredData.length === 0) {
+                notifyWarning('لا توجد بيانات للتصدير');
+                return;
+            }
+            
+            const config = reportConfigs[currentReportType];
+            const filename = `${config.title}_${new Date().toLocaleDateString('ar-EG').replace(/\//g, '-')}`;
+            
+            if (format === 'excel') {
+                const content = convertToExcelHTML(filteredData, config.columns, config.title);
+                downloadExcel(content, filename + '.xls');
+                notifySuccess(`تم تصدير ${filteredData.length} سجل بنجاح`);
+            } else {
+                const content = convertToCSV(filteredData, config.columns);
+                downloadCSV(content, filename + '.csv');
+                notifySuccess(`تم تصدير ${filteredData.length} سجل بنجاح`);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            selectReport('financial');
+        });
+    </script>
+</body>
+</html>

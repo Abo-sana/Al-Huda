@@ -11,33 +11,60 @@
     <link rel="stylesheet" href="../css/styles.css">
 
     <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
         .admin-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 16px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
             padding: 24px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .admin-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            background: rgba(30, 41, 59, 0.8);
         }
 
         .quick-action-btn {
-            padding: 16px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 2px solid rgba(99, 102, 241, 0.2);
-            border-radius: 12px;
+            padding: 20px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
         }
 
         .quick-action-btn:hover {
-            background: rgba(99, 102, 241, 0.2);
-            border-color: #6366f1;
-            transform: scale(1.05);
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
         }
 
         .alert-item {
@@ -182,9 +209,9 @@
                     <i class="fas fa-bell text-3xl text-blue-500 mb-2"></i>
                     <p class="text-sm font-bold">إرسال إشعار</p>
                 </div>
-                <div class="quick-action-btn">
+                <div class="quick-action-btn" onclick="window.location.href='reports.html'">
                     <i class="fas fa-chart-bar text-3xl text-purple-500 mb-2"></i>
-                    <p class="text-sm font-bold">تقرير مالي</p>
+                    <p class="text-sm font-bold">مركز التقارير</p>
                 </div>
                 <div class="quick-action-btn">
                     <i class="fas fa-users text-3xl text-pink-500 mb-2"></i>
@@ -367,18 +394,16 @@
 
     <!-- Data Manager Script -->
     <script src="../js/data.js"></script>
-    <script src="../js/charts.js"></script>
-    
-    <!-- Auth & Navigation Scripts -->
     <script src="../js/auth.js"></script>
     <script src="../js/admin-navigation.js"></script>
+    <script src="../js/charts.js"></script>
     
     <script>
-        // حماية الصفحة - أدمن فقط
+        // حماية الصفحة
         if (!protectAdminPage()) {
-            // سيتم إعادة التوجيه تلقائياً
+            // سيتم إعادة التوجيه
         }
-        
+
         // Load data from dataManager
         let stats = {};
         let allPayments = [];
@@ -422,44 +447,27 @@
             const quickActionBtns = document.querySelectorAll('.quick-action-btn');
             
             // إضافة ساكن
-            quickActionBtns[0].addEventListener('click', () => {
-                window.location.href = 'residents.html';
-            });
+            quickActionBtns[0].onclick = () => window.location.href = 'residents.html';
             
             // إصدار فاتورة
-            quickActionBtns[1].addEventListener('click', () => {
-                window.location.href = 'payments.html';
-            });
+            quickActionBtns[1].onclick = () => window.location.href = 'payments.html';
             
             // طلب صيانة
-            quickActionBtns[2].addEventListener('click', () => {
-                window.location.href = 'maintenance.html';
-            });
+            quickActionBtns[2].onclick = () => window.location.href = 'maintenance.html';
             
             // إرسال إشعار
-            quickActionBtns[3].addEventListener('click', () => {
-                const message = prompt('أدخل نص الإشعار:');
+            quickActionBtns[3].onclick = () => {
+                const message = prompt('اكتب نص الإشعار المراد إرساله لجميع السكان:');
                 if (message) {
-                    alert('✅ تم إرسال الإشعار لجميع السكان:\n\n' + message);
+                    alert('✅ تم إرسال الإشعار بنجاح لجميع الوحدات');
                 }
-            });
+            };
             
-            // تقرير مالي
-            quickActionBtns[4].addEventListener('click', () => {
-                const totalRevenue = allPayments.filter(p => p.status === 'مدفوع').reduce((sum, p) => sum + p.amount, 0);
-                const pendingRevenue = allPayments.filter(p => p.status === 'معلق').reduce((sum, p) => sum + p.amount, 0);
-                
-                alert(`📊 التقرير المالي:\n\n` +
-                      `💰 الإيرادات المحصلة: ${totalRevenue} ج.م\n` +
-                      `⏳ الإيرادات المعلقة: ${pendingRevenue} ج.م\n` +
-                      `📈 إجمالي الإيرادات: ${totalRevenue + pendingRevenue} ج.م\n` +
-                      `✅ نسبة التحصيل: ${Math.round((totalRevenue / (totalRevenue + pendingRevenue)) * 100)}%`);
-            });
+            // مركز التقارير
+            quickActionBtns[4].onclick = () => window.location.href = 'reports.html';
             
             // اجتماع
-            quickActionBtns[5].addEventListener('click', () => {
-                window.location.href = 'voting.html';
-            });
+            quickActionBtns[5].onclick = () => window.location.href = 'voting.html';
         }
 
         // Approval buttons

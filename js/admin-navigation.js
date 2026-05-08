@@ -53,6 +53,14 @@ const adminNavigationMenu = [
         description: 'إدارة التصويت والاجتماعات',
         color: 'pink',
         badge: 'جديد'
+    },
+    {
+        name: 'مركز التقارير',
+        icon: 'fa-file-invoice-dollar',
+        page: 'reports.html',
+        description: 'تقارير مالية وإحصائية كاملة',
+        color: 'indigo',
+        badge: 'ذكية'
     }
 ];
 
@@ -85,27 +93,27 @@ function createAdminSidebar() {
     
     const sidebar = document.createElement('div');
     sidebar.id = 'adminNavigationSidebar';
-    sidebar.className = 'fixed right-0 top-0 h-full w-80 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 backdrop-blur-md border-l border-indigo-500/30 transform translate-x-full transition-transform duration-300 z-50 shadow-2xl';
+    sidebar.className = 'fixed right-0 top-0 h-full w-80 bg-slate-900 border-l border-white/10 transform translate-x-full transition-transform duration-300 z-[100] shadow-2xl shadow-black/50';
     
     const basePath = getBasePath();
     const stats = getAdminQuickStats();
     
     let menuHTML = `
-        <div class="flex flex-col h-full">
+        <div class="flex flex-col h-full bg-[#0f172a]">
             <!-- Header -->
-            <div class="p-6 border-b border-indigo-500/30 bg-gradient-to-r from-indigo-600/20 to-purple-600/20">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div class="p-6 border-b border-white/5 bg-slate-900/50">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
                             <i class="fas fa-user-shield text-white text-xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-xl font-bold text-white">لوحة الإدارة</h2>
-                            <p class="text-xs text-indigo-300">مدير النظام</p>
+                            <h2 class="text-xl font-black text-white leading-none">لوحة الإدارة</h2>
+                            <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-2">Administrator</p>
                         </div>
                     </div>
-                    <button onclick="toggleAdminSidebar()" class="text-2xl text-slate-400 hover:text-white transition-colors">
-                        <i class="fas fa-times"></i>
+                    <button onclick="toggleAdminSidebar()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all">
+                        <i class="fas fa-times text-sm"></i>
                     </button>
                 </div>
                 
@@ -138,25 +146,25 @@ function createAdminSidebar() {
     
     adminNavigationMenu.forEach(item => {
         const badgeHTML = item.badge ? 
-            `<span class="text-xs px-2 py-1 bg-${item.color}-600 rounded-full">${item.badge}</span>` : '';
+            `<span class="text-[9px] px-2 py-0.5 bg-indigo-600 text-white rounded-full font-black uppercase ml-2">${item.badge}</span>` : '';
         const url = basePath + item.page;
         const isActive = window.location.pathname.includes(item.page);
-        const activeClass = isActive ? `bg-${item.color}-600/30 border-${item.color}-500` : 'hover:bg-slate-700/50';
+        const activeClass = isActive ? 'bg-indigo-600/10 border-indigo-500/50' : 'border-transparent hover:bg-white/5';
         
         menuHTML += `
-            <a href="${url}" class="block p-4 rounded-xl ${activeClass} border border-transparent hover:border-${item.color}-500/30 transition-all group">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-${item.color}-600/20 rounded-xl flex items-center justify-center group-hover:bg-${item.color}-600/40 transition-colors">
-                        <i class="fas ${item.icon} text-${item.color}-400 text-xl"></i>
+            <a href="${url}" class="block p-4 rounded-2xl ${activeClass} border transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center border border-white/5 group-hover:border-indigo-500/30 transition-all">
+                        <i class="fas ${item.icon} text-slate-400 group-hover:text-indigo-400 text-lg transition-colors"></i>
                     </div>
                     <div class="flex-1">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-white">${item.name}</span>
+                        <div class="flex items-center">
+                            <span class="font-bold text-slate-200 group-hover:text-white transition-colors">${item.name}</span>
                             ${badgeHTML}
                         </div>
-                        <p class="text-xs text-slate-400 mt-1">${item.description}</p>
+                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors mt-1">${item.description}</p>
                     </div>
-                    <i class="fas fa-chevron-left text-slate-600 group-hover:text-${item.color}-400 transition-colors"></i>
+                    <i class="fas fa-chevron-left text-slate-700 group-hover:text-indigo-500 text-xs transition-all transform group-hover:-translate-x-1"></i>
                 </div>
             </a>
         `;
@@ -248,6 +256,78 @@ function closeAdminSidebar() {
     if (sidebar && !sidebar.classList.contains('translate-x-full')) {
         sidebar.classList.add('translate-x-full');
     }
+}
+
+// ====================================
+// زر الرجوع
+// ====================================
+
+function createAdminBackButton() {
+    // حذف الزر القديم إن وجد
+    const oldButton = document.getElementById('adminBackButton');
+    if (oldButton) oldButton.remove();
+    
+    const backButton = document.createElement('button');
+    backButton.id = 'adminBackButton';
+    backButton.className = 'fixed left-4 bottom-4 z-50 w-14 h-14 bg-slate-800/90 hover:bg-slate-700 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 border border-slate-600';
+    backButton.innerHTML = `
+        <i class="fas fa-home text-white text-xl"></i>
+    `;
+    backButton.onclick = () => {
+        window.location.href = './admin-dashboard.html';
+    };
+    backButton.title = 'الرئيسية';
+    
+    // إخفاء الزر في لوحة التحكم
+    if (window.location.pathname.includes('admin-dashboard.html')) {
+        backButton.style.display = 'none';
+    }
+    
+    document.body.appendChild(backButton);
+}
+
+// ====================================
+// التهيئة
+// ====================================
+
+function initAdminNavigation() {
+    // التحقق من أن المستخدم أدمن
+    if (!isAdmin()) {
+        console.warn('Admin navigation loaded for non-admin user');
+        return;
+    }
+    
+    createAdminSidebar();
+    createAdminMenuButton();
+    createAdminBackButton();
+}
+
+// ====================================
+// إغلاق القائمة عند النقر خارجها
+// ====================================
+
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('adminNavigationSidebar');
+    const menuButton = document.getElementById('adminMenuButton');
+    
+    if (sidebar && menuButton) {
+        const clickedInsideSidebar = sidebar.contains(event.target);
+        const clickedMenuButton = menuButton.contains(event.target);
+        
+        if (!clickedInsideSidebar && !clickedMenuButton) {
+            closeAdminSidebar();
+        }
+    }
+});
+
+// ====================================
+// التشغيل التلقائي
+// ====================================
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminNavigation);
+} else {
+    initAdminNavigation();
 }
 
 // ====================================
