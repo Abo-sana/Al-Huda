@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الإدارة | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .admin-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .quick-action-btn {
+            padding: 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            transform: scale(1.05);
+        }
+
+        .alert-item {
+            padding: 16px;
+            border-right: 4px solid;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .alert-critical {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #f59e0b;
+        }
+
+        .alert-info {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: #6366f1;
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h1 class="text-lg font-black hidden sm:block">لوحة تحكم <span class="text-indigo-500">الإدارة</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="logout()" class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg border border-red-500/20 transition-all text-sm font-bold">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج</span>
+                </button>
+                <button class="relative">
+                    <i class="fas fa-bell text-xl text-slate-400 hover:text-white"></i>
+                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">5</span>
+                </button>
+                <div class="text-sm">
+                    <p class="text-slate-400">مدير</p>
+                    <p class="font-bold">محمد عادل</p>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Header -->
+        <div>
+            <h2 class="text-3xl font-bold mb-2">لوحة تحكم الإدارة</h2>
+            <p class="text-slate-400">نظرة شاملة على جميع عمليات البرج</p>
+        </div>
+
+        <!-- Main Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="admin-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-slate-400 text-sm mb-1">إجمالي الإيرادات</p>
+                        <p class="text-3xl font-bold text-emerald-400">9,200</p>
+                        <p class="text-xs text-slate-500 mt-1">ج.م / شهرياً</p>
+                    </div>
+                    <i class="fas fa-money-bill-wave text-3xl text-emerald-500 opacity-20"></i>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-emerald-400">↑ 12%</span>
+                    <span class="text-slate-400">عن الشهر الماضي</span>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-slate-400 text-sm mb-1">نسبة التحصيل</p>
+                        <p class="text-3xl font-bold text-indigo-400">92%</p>
+                    </div>
+                    <i class="fas fa-chart-line text-3xl text-indigo-500 opacity-20"></i>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-emerald-400">42/45</span>
+                    <span class="text-slate-400">وحدة دفعت</span>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-slate-400 text-sm mb-1">الشكاوى النشطة</p>
+                        <p class="text-3xl font-bold text-orange-400">7</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle text-3xl text-orange-500 opacity-20"></i>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-red-400">3 عاجلة</span>
+                    <span class="text-slate-400">تحتاج متابعة</span>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <p class="text-slate-400 text-sm mb-1">نسبة الإشغال</p>
+                        <p class="text-3xl font-bold text-blue-400">93%</p>
+                    </div>
+                    <i class="fas fa-home text-3xl text-blue-500 opacity-20"></i>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-slate-400">42 مأهولة</span>
+                    <span class="text-red-400">3 شاغرة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="glass-card p-6 rounded-2xl">
+            <h3 class="text-xl font-bold mb-4">إجراءات سريعة</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="quick-action-btn">
+                    <i class="fas fa-plus-circle text-3xl text-indigo-500 mb-2"></i>
+                    <p class="text-sm font-bold">إضافة ساكن</p>
+                </div>
+                <div class="quick-action-btn">
+                    <i class="fas fa-file-invoice text-3xl text-emerald-500 mb-2"></i>
+                    <p class="text-sm font-bold">إصدار فاتورة</p>
+                </div>
+                <div class="quick-action-btn">
+                    <i class="fas fa-wrench text-3xl text-orange-500 mb-2"></i>
+                    <p class="text-sm font-bold">طلب صيانة</p>
+                </div>
+                <div class="quick-action-btn">
+                    <i class="fas fa-bell text-3xl text-blue-500 mb-2"></i>
+                    <p class="text-sm font-bold">إرسال إشعار</p>
+                </div>
+                <div class="quick-action-btn">
+                    <i class="fas fa-chart-bar text-3xl text-purple-500 mb-2"></i>
+                    <p class="text-sm font-bold">تقرير مالي</p>
+                </div>
+                <div class="quick-action-btn">
+                    <i class="fas fa-users text-3xl text-pink-500 mb-2"></i>
+                    <p class="text-sm font-bold">اجتماع</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Financial Overview -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-6">نظرة مالية شاملة</h3>
+                    <div class="h-64">
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Complaints Chart -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold mb-4">توزيع الشكاوى</h3>
+                        <div class="h-64">
+                            <canvas id="complaintsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Maintenance Chart -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h3 class="text-xl font-bold mb-4">حالة الصيانة</h3>
+                        <div class="h-64">
+                            <canvas id="maintenanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4">الأنشطة الأخيرة</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-money-bill text-emerald-500 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">دفعة جديدة</p>
+                                <p class="text-xs text-slate-400">الوحدة 304 - 200 ج.م</p>
+                            </div>
+                            <span class="text-xs text-slate-500">منذ 5 دقائق</span>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-exclamation-circle text-orange-500 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">شكوى جديدة</p>
+                                <p class="text-xs text-slate-400">الوحدة 205 - تسرب مياه</p>
+                            </div>
+                            <span class="text-xs text-slate-500">منذ 15 دقيقة</span>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-wrench text-blue-500 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">صيانة مكتملة</p>
+                                <p class="text-xs text-slate-400">المصعد رقم 1</p>
+                            </div>
+                            <span class="text-xs text-slate-500">منذ ساعة</span>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
+                            <i class="fas fa-user-plus text-indigo-500 mt-1"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">ساكن جديد</p>
+                                <p class="text-xs text-slate-400">الوحدة 102</p>
+                            </div>
+                            <span class="text-xs text-slate-500">منذ 3 ساعات</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Occupancy Status -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4">توزيع الوحدات</h3>
+                    <div class="h-64">
+                        <canvas id="unitsChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                
+                <!-- Alerts -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">التنبيهات</h3>
+                    <div class="space-y-3">
+                        <div class="alert-item alert-critical">
+                            <p class="font-bold text-sm text-red-400">⚠️ عاجل</p>
+                            <p class="text-xs text-slate-300 mt-1">3 وحدات متأخرة في السداد</p>
+                        </div>
+
+                        <div class="alert-item alert-warning">
+                            <p class="font-bold text-sm text-orange-400">⚡ تحذير</p>
+                            <p class="text-xs text-slate-300 mt-1">صيانة المصعد 2 مستحقة</p>
+                        </div>
+
+                        <div class="alert-item alert-info">
+                            <p class="font-bold text-sm text-indigo-400">ℹ️ معلومة</p>
+                            <p class="text-xs text-slate-300 mt-1">اجتماع الجمعية غداً</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Approvals -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">في انتظار الموافقة</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-slate-800/50 rounded-lg">
+                            <p class="font-bold text-sm">طلب صيانة</p>
+                            <p class="text-xs text-slate-400 mb-2">الوحدة 301</p>
+                            <div class="flex gap-2">
+                                <button class="flex-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded text-xs">
+                                    موافقة
+                                </button>
+                                <button class="flex-1 px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-xs">
+                                    رفض
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-800/50 rounded-lg">
+                            <p class="font-bold text-sm">طلب تسجيل ساكن</p>
+                            <p class="text-xs text-slate-400 mb-2">الوحدة 405</p>
+                            <div class="flex gap-2">
+                                <button class="flex-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded text-xs">
+                                    موافقة
+                                </button>
+                                <button class="flex-1 px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-xs">
+                                    رفض
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">حالة الأنظمة</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between items-center">
+                            <span>المصعد 1</span>
+                            <span class="badge badge-success">✓ يعمل</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>المصعد 2</span>
+                            <span class="badge badge-success">✓ يعمل</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>موتور المياه</span>
+                            <span class="badge badge-success">✓ يعمل</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>الكاميرات</span>
+                            <span class="badge badge-success">✓ نشطة</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>الإنترنت</span>
+                            <span class="badge badge-success">✓ متصل</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Data Manager Script -->
+    <script src="../js/data.js"></script>
+    <script src="../js/charts.js"></script>
+    
+    <!-- Auth & Navigation Scripts -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin-navigation.js"></script>
+    
+    <script>
+        // حماية الصفحة - أدمن فقط
+        if (!protectAdminPage()) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+        
+        // Load data from dataManager
+        let stats = {};
+        let allPayments = [];
+        let allComplaints = [];
+        let allMaintenance = [];
+        let allResidents = [];
+        let allUnits = [];
+
+        function loadData() {
+            stats = dataManager.getStatistics();
+            allPayments = dataManager.getPayments();
+            allComplaints = dataManager.getComplaints();
+            allMaintenance = dataManager.getMaintenance();
+            allResidents = dataManager.getResidents();
+            allUnits = dataManager.getUnits();
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            // Update main statistics
+            const totalRevenue = allPayments.filter(p => p.status === 'مدفوع').reduce((sum, p) => sum + p.amount, 0);
+            document.querySelector('.admin-card:nth-child(1) .text-3xl').textContent = totalRevenue.toLocaleString();
+            
+            const collectionRate = Math.round((stats.paidPayments / allPayments.length) * 100) || 0;
+            document.querySelector('.admin-card:nth-child(2) .text-3xl').textContent = collectionRate + '%';
+            document.querySelector('.admin-card:nth-child(2) .text-emerald-400').textContent = `${stats.paidPayments}/${allPayments.length}`;
+            
+            const activeComplaints = allComplaints.filter(c => c.status !== 'محلولة' && c.status !== 'مغلقة').length;
+            const urgentComplaints = allComplaints.filter(c => c.priority === 'عاجلة' && c.status !== 'محلولة').length;
+            document.querySelector('.admin-card:nth-child(3) .text-3xl').textContent = activeComplaints;
+            document.querySelector('.admin-card:nth-child(3) .text-red-400').textContent = `${urgentComplaints} عاجلة`;
+            
+            const occupancyRate = Math.round((stats.occupiedUnits / stats.totalUnits) * 100) || 0;
+            document.querySelector('.admin-card:nth-child(4) .text-3xl').textContent = occupancyRate + '%';
+            document.querySelector('.admin-card:nth-child(4) .text-slate-400').textContent = `${stats.occupiedUnits} مأهولة`;
+            document.querySelector('.admin-card:nth-child(4) .text-red-400').textContent = `${stats.vacantUnits} شاغرة`;
+        }
+
+        // Quick Actions
+        function setupQuickActions() {
+            const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+            
+            // إضافة ساكن
+            quickActionBtns[0].addEventListener('click', () => {
+                window.location.href = 'residents.html';
+            });
+            
+            // إصدار فاتورة
+            quickActionBtns[1].addEventListener('click', () => {
+                window.location.href = 'payments.html';
+            });
+            
+            // طلب صيانة
+            quickActionBtns[2].addEventListener('click', () => {
+                window.location.href = 'maintenance.html';
+            });
+            
+            // إرسال إشعار
+            quickActionBtns[3].addEventListener('click', () => {
+                const message = prompt('أدخل نص الإشعار:');
+                if (message) {
+                    alert('✅ تم إرسال الإشعار لجميع السكان:\n\n' + message);
+                }
+            });
+            
+            // تقرير مالي
+            quickActionBtns[4].addEventListener('click', () => {
+                const totalRevenue = allPayments.filter(p => p.status === 'مدفوع').reduce((sum, p) => sum + p.amount, 0);
+                const pendingRevenue = allPayments.filter(p => p.status === 'معلق').reduce((sum, p) => sum + p.amount, 0);
+                
+                alert(`📊 التقرير المالي:\n\n` +
+                      `💰 الإيرادات المحصلة: ${totalRevenue} ج.م\n` +
+                      `⏳ الإيرادات المعلقة: ${pendingRevenue} ج.م\n` +
+                      `📈 إجمالي الإيرادات: ${totalRevenue + pendingRevenue} ج.م\n` +
+                      `✅ نسبة التحصيل: ${Math.round((totalRevenue / (totalRevenue + pendingRevenue)) * 100)}%`);
+            });
+            
+            // اجتماع
+            quickActionBtns[5].addEventListener('click', () => {
+                window.location.href = 'voting.html';
+            });
+        }
+
+        // Approval buttons
+        function setupApprovalButtons() {
+            const approveButtons = document.querySelectorAll('button.bg-emerald-600');
+            const rejectButtons = document.querySelectorAll('button.bg-red-600');
+            
+            approveButtons.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    btn.parentElement.parentElement.style.opacity = '0.5';
+                    alert('✅ تمت الموافقة على الطلب');
+                    setTimeout(() => {
+                        btn.parentElement.parentElement.remove();
+                    }, 500);
+                });
+            });
+            
+            rejectButtons.forEach((btn, index) => {
+                btn.addEventListener('click', () => {
+                    const reason = prompt('سبب الرفض (اختياري):');
+                    btn.parentElement.parentElement.style.opacity = '0.5';
+                    alert('❌ تم رفض الطلب' + (reason ? '\nالسبب: ' + reason : ''));
+                    setTimeout(() => {
+                        btn.parentElement.parentElement.remove();
+                    }, 500);
+                });
+            });
+        }
+
+        // Chart Instances
+        let charts = {
+            financial: null,
+            complaints: null,
+            maintenance: null,
+            units: null
+        };
+
+        function initializeCharts() {
+            // Destroy existing charts if any
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+
+            // Financial Chart (using createPaymentsChart from charts.js)
+            charts.financial = createPaymentsChart('financialChart', allPayments);
+
+            // Complaints Chart
+            charts.complaints = createComplaintsChart('complaintsChart', allComplaints);
+
+            // Maintenance Chart
+            charts.maintenance = createMaintenanceChart('maintenanceChart', allMaintenance);
+
+            // Units Chart
+            charts.units = createUnitsChart('unitsChart', allUnits);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            initializeCharts();
+            setupQuickActions();
+            setupApprovalButtons();
+            
+            // Real-time updates
+            setInterval(() => {
+                loadData();
+                initializeCharts();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

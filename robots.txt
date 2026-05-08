@@ -1,0 +1,43 @@
+# robots.txt - بوابة الهدى الرقمية
+# Al-Huda Gateway - Robots Configuration
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /login.html
+Allow: /css/
+Allow: /js/
+
+# منع الوصول للصفحات الداخلية
+Disallow: /pages/
+Disallow: /pages/dashboard.html
+Disallow: /pages/admin-dashboard.html
+Disallow: /pages/residents.html
+Disallow: /pages/payments.html
+Disallow: /pages/complaints.html
+Disallow: /pages/maintenance.html
+Disallow: /pages/voting.html
+
+# منع الوصول لملفات الاختبار
+Disallow: /test-navigation.html
+Disallow: /TEST.html
+Disallow: /clock.html
+
+# منع الوصول للملفات الحساسة
+Disallow: /.env
+Disallow: /.env.example
+Disallow: /.git/
+Disallow: /.vscode/
+Disallow: /config.js
+
+# منع الوصول لملفات التوثيق
+Disallow: /*.md
+Disallow: /*.txt
+Disallow: /CHANGELOG.md
+Disallow: /README.md
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 10

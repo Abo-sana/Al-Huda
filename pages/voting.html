@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الجمعية العمومية الإلكترونية | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <style>
+        .vote-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .vote-card:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .vote-option {
+            padding: 16px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+
+        .vote-option:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .vote-option.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .vote-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .vote-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #10b981);
+            transition: width 0.5s ease;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .meeting-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .document-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateX(-4px);
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <h1 class="text-lg font-black hidden sm:block">الجمعية <span class="text-indigo-500">العمومية</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="logout()" class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg border border-red-500/20 transition-all text-sm font-bold">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج</span>
+                </button>
+                <div class="text-sm">
+                    <p class="text-slate-400">الوحدة</p>
+                    <p class="font-bold">304</p>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Header -->
+        <div>
+            <h2 class="text-3xl font-bold mb-2">الجمعية العمومية الإلكترونية</h2>
+            <p class="text-slate-400">شارك في القرارات المهمة للبرج</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="stat-box">
+                <div class="stat-number">12</div>
+                <p class="text-slate-400 text-sm">إجمالي التصويتات</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">3</div>
+                <p class="text-slate-400 text-sm">تصويتات نشطة</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">85%</div>
+                <p class="text-slate-400 text-sm">نسبة المشاركة</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">38</div>
+                <p class="text-slate-400 text-sm">عدد المصوتين</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Active Votes -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Live Vote -->
+                <div class="glass-card p-6 rounded-2xl border-2 border-red-500/30">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">تصويت على تجديد المصاعد</h3>
+                            <p class="text-sm text-slate-400">ينتهي خلال 2 ساعة</p>
+                        </div>
+                        <span class="live-badge">
+                            <span class="live-dot"></span>
+                            مباشر
+                        </span>
+                    </div>
+
+                    <p class="text-slate-300 mb-6">
+                        هل توافق على تجديد المصاعد بتكلفة 150,000 جنيه؟ سيتم توزيع التكلفة على جميع الوحدات.
+                    </p>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="vote-option" onclick="selectVote(this, 'yes')">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-check-circle text-2xl text-emerald-500"></i>
+                                    <span class="font-bold">موافق</span>
+                                </div>
+                                <span class="text-emerald-400 font-bold">72%</span>
+                            </div>
+                            <div class="vote-progress">
+                                <div class="vote-progress-fill" style="width: 72%"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">32 صوت</p>
+                        </div>
+
+                        <div class="vote-option" onclick="selectVote(this, 'no')">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-times-circle text-2xl text-red-500"></i>
+                                    <span class="font-bold">غير موافق</span>
+                                </div>
+                                <span class="text-red-400 font-bold">28%</span>
+                            </div>
+                            <div class="vote-progress">
+                                <div class="vote-progress-fill bg-gradient-to-r from-red-500 to-orange-500" style="width: 28%"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">12 صوت</p>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary w-full" onclick="submitVote()">
+                        <i class="fas fa-paper-plane ml-2"></i> إرسال التصويت
+                    </button>
+                </div>
+
+                <!-- Other Votes -->
+                <div class="vote-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold mb-2">تغيير شركة الأمن</h3>
+                            <p class="text-xs text-slate-400">ينتهي خلال 5 أيام</p>
+                        </div>
+                        <span class="badge badge-warning">نشط</span>
+                    </div>
+
+                    <p class="text-sm text-slate-300 mb-4">
+                        هل توافق على تغيير شركة الأمن الحالية إلى شركة جديدة بتكلفة أقل؟
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="text-center p-3 bg-slate-800/50 rounded-lg">
+                            <p class="text-2xl font-bold text-emerald-400">65%</p>
+                            <p class="text-xs text-slate-400">موافق</p>
+                        </div>
+                        <div class="text-center p-3 bg-slate-800/50 rounded-lg">
+                            <p class="text-2xl font-bold text-red-400">35%</p>
+                            <p class="text-xs text-slate-400">غير موافق</p>
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary w-full" onclick="openVoteDetails(2)">
+                        <i class="fas fa-eye ml-2"></i> عرض التفاصيل
+                    </button>
+                </div>
+
+                <div class="vote-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold mb-2">تركيب كاميرات إضافية</h3>
+                            <p class="text-xs text-slate-400">ينتهي خلال أسبوع</p>
+                        </div>
+                        <span class="badge badge-info">نشط</span>
+                    </div>
+
+                    <p class="text-sm text-slate-300 mb-4">
+                        هل توافق على تركيب 4 كاميرات مراقبة إضافية في المداخل؟
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="text-center p-3 bg-slate-800/50 rounded-lg">
+                            <p class="text-2xl font-bold text-emerald-400">88%</p>
+                            <p class="text-xs text-slate-400">موافق</p>
+                        </div>
+                        <div class="text-center p-3 bg-slate-800/50 rounded-lg">
+                            <p class="text-2xl font-bold text-red-400">12%</p>
+                            <p class="text-xs text-slate-400">غير موافق</p>
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary w-full" onclick="openVoteDetails(3)">
+                        <i class="fas fa-eye ml-2"></i> عرض التفاصيل
+                    </button>
+                </div>
+
+                <!-- Completed Votes -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4">التصويتات المنتهية</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-800/50 rounded-lg">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold">تجديد الدهانات الخارجية</h4>
+                                <span class="badge badge-success">تم</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-3">انتهى في 01/05/2026</p>
+                            <div class="flex gap-4 text-sm">
+                                <span class="text-emerald-400">✓ موافق: 92%</span>
+                                <span class="text-red-400">✗ غير موافق: 8%</span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-800/50 rounded-lg">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold">زيادة رسوم الصيانة</h4>
+                                <span class="badge badge-danger">مرفوض</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-3">انتهى في 25/04/2026</p>
+                            <div class="flex gap-4 text-sm">
+                                <span class="text-emerald-400">✓ موافق: 35%</span>
+                                <span class="text-red-400">✗ غير موافق: 65%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="space-y-6">
+                
+                <!-- Next Meeting -->
+                <div class="meeting-card">
+                    <h3 class="text-lg font-bold mb-4">الاجتماع القادم</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-calendar text-indigo-500"></i>
+                            <div>
+                                <p class="text-slate-400">التاريخ</p>
+                                <p class="font-bold">15 مايو 2026</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-clock text-indigo-500"></i>
+                            <div>
+                                <p class="text-slate-400">الوقت</p>
+                                <p class="font-bold">7:00 مساءً</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-map-marker-alt text-indigo-500"></i>
+                            <div>
+                                <p class="text-slate-400">المكان</p>
+                                <p class="font-bold">قاعة الاجتماعات</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="confirmAttendance()" class="btn-primary w-full mt-4">
+                        <i class="fas fa-calendar-check ml-2"></i> تأكيد الحضور
+                    </button>
+                </div>
+
+                <!-- Documents -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">المستندات</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="document-item">
+                            <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">محضر الاجتماع السابق</p>
+                                <p class="text-xs text-slate-400">2.3 MB</p>
+                            </div>
+                            <button onclick="downloadDocument('محضر الاجتماع السابق')" class="text-indigo-400 hover:text-indigo-300">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+
+                        <div class="document-item">
+                            <i class="fas fa-file-excel text-green-500 text-xl"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">التقرير المالي</p>
+                                <p class="text-xs text-slate-400">1.8 MB</p>
+                            </div>
+                            <button onclick="downloadDocument('التقرير المالي')" class="text-indigo-400 hover:text-indigo-300">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+
+                        <div class="document-item">
+                            <i class="fas fa-file-word text-blue-500 text-xl"></i>
+                            <div class="flex-1">
+                                <p class="font-bold text-sm">جدول الأعمال</p>
+                                <p class="text-xs text-slate-400">0.5 MB</p>
+                            </div>
+                            <button onclick="downloadDocument('جدول الأعمال')" class="text-indigo-400 hover:text-indigo-300">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participation Stats -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">إحصائيات المشاركة</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>مشاركتك</span>
+                                <span class="font-bold">90%</span>
+                            </div>
+                            <div class="vote-progress">
+                                <div class="vote-progress-fill" style="width: 90%"></div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-white/10 pt-4">
+                            <p class="text-sm text-slate-400 mb-2">آخر تصويت</p>
+                            <p class="font-bold text-sm">تجديد الدهانات</p>
+                            <p class="text-xs text-slate-500">01/05/2026</p>
+                        </div>
+
+                        <div class="border-t border-white/10 pt-4">
+                            <p class="text-sm text-slate-400 mb-2">إجمالي التصويتات</p>
+                            <p class="text-2xl font-bold text-indigo-400">11</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/reminders.js"></script>
+    
+    <!-- Auth & Dynamic Navigation Scripts -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // حماية الصفحة - صفحة مشتركة
+        if (!protectSharedPage()) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+        
+        // تحميل نظام التنقل المناسب بناءً على نوع المستخدم
+        const navigationScript = document.createElement('script');
+        if (isAdmin()) {
+            navigationScript.src = '../js/admin-navigation.js';
+        } else {
+            navigationScript.src = '../js/user-navigation.js';
+        }
+        document.head.appendChild(navigationScript);
+    </script>
+    <script>
+        function confirmAttendance() {
+            alert('تم تأكيد حضورك للاجتماع بنجاح. شكراً لك!');
+        }
+
+        function downloadDocument(name) {
+            alert(`جاري تحميل مستند: ${name}`);
+        }
+
+        let selectedVote = null;
+
+        function selectVote(element, vote) {
+            // Remove previous selection
+            document.querySelectorAll('.vote-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            element.classList.add('selected');
+            selectedVote = vote;
+        }
+
+        function submitVote() {
+            if (!selectedVote) {
+                notifyWarning('الرجاء اختيار أحد الخيارات');
+                return;
+            }
+
+            // Simulate vote submission
+            const voteText = selectedVote === 'yes' ? 'موافق' : 'غير موافق';
+            
+            if (confirm(`هل أنت متأكد من التصويت بـ "${voteText}"؟`)) {
+                notifySuccess('تم إرسال تصويتك بنجاح!');
+                
+                // Disable voting after submission
+                document.querySelectorAll('.vote-option').forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                    opt.style.opacity = '0.6';
+                });
+                
+                document.querySelector('.btn-primary').disabled = true;
+                document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-check ml-2"></i> تم التصويت';
+            }
+        }
+
+        function openVoteDetails(voteId) {
+            alert(`عرض تفاصيل التصويت رقم ${voteId}`);
+        }
+
+        // Update live vote timer
+        setInterval(() => {
+            // Simulate real-time updates
+            const randomChange = Math.random() * 2 - 1; // -1 to 1
+            // Update percentages slightly
+        }, 5000);
+    </script>
+</body>
+</html>

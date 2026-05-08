@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة برج الهدى الرقمية | ٢٠٢٦</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --dark-bg: #0f172a;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--dark-bg);
+            color: #f1f5f9;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold">BH</div>
+                <h1 class="text-lg font-black hidden sm:block">بوابة <span class="text-indigo-500">الهدى</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <span class="text-sm text-slate-400 hidden md:block">مرحباً، م/ محمد عادل</span>
+                <a href="login.html" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl text-sm font-bold transition-all">
+                    تسجيل الدخول
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Quick Stats Section -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="glass-card p-4 text-center">
+                <p class="text-xs text-slate-400 mb-1">صندوق الطوارئ</p>
+                <p class="text-xl font-bold text-inter text-emerald-400">12,450 <span class="text-xs">ج.م</span></p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <p class="text-xs text-slate-400 mb-1">نسبة التحصيل</p>
+                <p class="text-xl font-bold text-inter text-indigo-400">92%</p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <p class="text-xs text-slate-400 mb-1">المصاعد</p>
+                <p class="text-sm font-bold text-emerald-400"><span class="status-dot bg-emerald-400 mr-1"></span> تعمل بكفاءة</p>
+            </div>
+            <div class="glass-card p-4 text-center">
+                <p class="text-xs text-slate-400 mb-1">موعد النظافة القادم</p>
+                <p class="text-sm font-bold text-indigo-400">غداً 09:00 AM</p>
+            </div>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Operations & Maintenance -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Vital Systems Monitor -->
+                <section class="glass-card p-6">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-indigo-500"></i>
+                        مراقبة الأنظمة الحيوية
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="font-bold">موتور المياه الرئيسي</span>
+                                <span class="text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-md">مستقر</span>
+                            </div>
+                            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full w-[85%]"></div>
+                            </div>
+                            <div class="flex justify-between mt-2 text-[10px] text-slate-400">
+                                <span>ضغط المياه: ٤.٢ بار</span>
+                                <span>حرارة الموتور: ٣٨° م</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-2xl border border-white/5">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="font-bold">نظام الأمان الذكي</span>
+                                <span class="text-xs px-2 py-1 bg-indigo-500/20 text-indigo-400 rounded-md">نشط</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="flex-1 h-12 bg-slate-700/50 rounded flex items-center justify-center text-xs">كاميرا ١ <i class="fa-solid fa-check ml-1 text-emerald-400"></i></div>
+                                <div class="flex-1 h-12 bg-slate-700/50 rounded flex items-center justify-center text-xs">كاميرا ٢ <i class="fa-solid fa-check ml-1 text-emerald-400"></i></div>
+                                <div class="flex-1 h-12 bg-slate-700/50 rounded flex items-center justify-center text-xs">الأبواب <i class="fa-solid fa-lock ml-1 text-indigo-400"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Transparency & Finance -->
+                <section class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold">التقرير المالي الشهري</h2>
+                        <button onclick="alert('جاري تجهيز التقرير المالي للتحميل...')" class="text-xs text-indigo-400 hover:underline">تحميل الكشف كاملاً</button>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Right Column: Community & Interaction -->
+            <div class="space-y-8">
+                
+                <!-- Digital Voting -->
+                <section class="glass-card p-6 bg-gradient-to-br from-indigo-600/20 to-transparent">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-vote-yea text-indigo-400"></i>
+                        تصويت الجيران
+                    </h2>
+                    <div class="space-y-4">
+                        <p class="text-sm text-slate-300">ما هو لون الإضاءة المفضل للمدخل الجديد؟</p>
+                        <div class="space-y-2">
+                            <button onclick="castVote('white')" class="w-full p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-right text-sm border border-white/5 flex justify-between">
+                                <span>أبيض ثلجي (Modern)</span>
+                                <span class="text-slate-500">٦٥٪</span>
+                            </button>
+                            <button onclick="castVote('warm')" class="w-full p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-right text-sm border border-white/5 flex justify-between">
+                                <span>أصفر دافئ (Warm)</span>
+                                <span class="text-slate-500">٣٥٪</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Pay -->
+                <section class="glass-card p-6 border-emerald-500/20">
+                    <h2 class="text-lg font-bold mb-4">سداد الاشتراك</h2>
+                    <div class="bg-emerald-500/10 p-4 rounded-2xl mb-4">
+                        <p class="text-xs text-emerald-500 mb-1">المبلغ المطلوب</p>
+                        <p class="text-2xl font-bold text-inter">200.00 <span class="text-xs">EGP</span></p>
+                    </div>
+                    <button onclick="window.location.href='pages/payments.html'" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+                        <i class="fa-solid fa-bolt"></i>
+                        سداد سريع عبر InstaPay
+                    </button>
+                </section>
+
+                <!-- Community Feed -->
+                <section class="glass-card p-6">
+                    <h2 class="text-lg font-bold mb-4">تنويهات الإدارة</h2>
+                    <div class="space-y-4">
+                        <div class="border-r-2 border-indigo-500 pr-4 py-1">
+                            <p class="text-xs text-slate-500">منذ ساعتين</p>
+                            <p class="text-sm font-bold">تم الانتهاء من عمرة المصعد رقم ١</p>
+                        </div>
+                        <div class="border-r-2 border-orange-500 pr-4 py-1">
+                            <p class="text-xs text-slate-500">أمس</p>
+                            <p class="text-sm font-bold text-orange-400">تنبيه: صيانة دورية للمياه يوم الثلاثاء</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Authentication System -->
+    <script src="js/auth.js"></script>
+    <script>
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                sessionStorage.clear();
+                window.location.reload();
+            }
+        }
+
+        function castVote(option) {
+            const text = option === 'white' ? 'أبيض ثلجي' : 'أصفر دافئ';
+            alert(`شكراً لك! تم تسجيل تصويتك لـ "${text}" بنجاح.`);
+        }
+
+        // تحديث زر تسجيل الدخول بناءً على حالة المستخدم
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.querySelector('a[href="login.html"]');
+            const welcomeText = document.querySelector('.text-sm.text-slate-400.hidden.md\\:block');
+            
+            if (sessionStorage.getItem('loggedIn') === 'true') {
+                const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+                const unitNumber = sessionStorage.getItem('unitNumber');
+                
+                if (loginBtn) {
+                    loginBtn.textContent = 'لوحة التحكم';
+                    loginBtn.href = isAdmin ? 'pages/admin-dashboard.html' : 'pages/user-dashboard.html';
+                    
+                    // إضافة زر خروج
+                    const logoutBtn = document.createElement('button');
+                    logoutBtn.onclick = logout;
+                    logoutBtn.className = 'px-4 py-2 rounded-xl text-sm font-bold text-red-400 border border-red-500/20 hover:bg-red-500/10 transition-all';
+                    logoutBtn.textContent = 'خروج';
+                    loginBtn.parentElement.appendChild(logoutBtn);
+                }
+                
+                if (welcomeText) {
+                    welcomeText.textContent = isAdmin ? 'مرحباً، المسئول' : `مرحباً، ساكن الوحدة ${unitNumber}`;
+                }
+            } else {
+                if (welcomeText) welcomeText.style.display = 'none';
+            }
+        });
+
+        // Financial Chart
+        const ctx = document.getElementById('financeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['يناير', 'فبراير', 'مارس', 'ابريل', 'مايو'],
+                datasets: [{
+                    label: 'إجمالي المحصل',
+                    data: [4200, 4800, 5100, 4900, 5500],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'المصروفات',
+                    data: [3800, 4000, 3900, 4100, 4200],
+                    borderColor: '#10b981',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#94a3b8', font: { family: 'Cairo' } }
+                    }
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { family: 'Cairo' } } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

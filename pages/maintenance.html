@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الصيانة | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .maintenance-card {
+            padding: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .maintenance-card:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: #6366f1;
+            transform: translateX(-4px);
+        }
+
+        .maintenance-card.urgent {
+            border-left: 4px solid #ef4444;
+        }
+
+        .maintenance-card.important {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .maintenance-card.normal {
+            border-left: 4px solid #10b981;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-scheduled {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+        }
+
+        .status-inprogress {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #6366f1;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 2px solid #6366f1;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+        }
+
+        .btn-small:hover {
+            background: rgba(99, 102, 241, 0.4);
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            right: 5px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: #6366f1;
+            border-radius: 50%;
+            margin-right: 20px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-input {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f1f5f9;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 8px;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.3s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: #f59e0b;
+            transform: scale(1.2);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .tab-btn.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .contractor-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .contractor-card:hover {
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .contractor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #10b981);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <h1 class="text-lg font-black hidden sm:block">نظام <span class="text-indigo-500">الصيانة</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="logout()" class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg border border-red-500/20 transition-all text-sm font-bold">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج</span>
+                </button>
+                <div class="text-sm">
+                    <p class="text-slate-400">الوحدة</p>
+                    <p class="font-bold">304</p>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Header -->
+        <div>
+            <h2 class="text-3xl font-bold mb-2">نظام الصيانة المتكامل</h2>
+            <p class="text-slate-400">جدولة وتتبع أعمال الصيانة والإصلاحات</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="stat-box">
+                <div class="stat-number">24</div>
+                <p class="text-slate-400 text-sm">إجمالي الصيانات</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">18</div>
+                <p class="text-slate-400 text-sm">اكتملت</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4</div>
+                <p class="text-slate-400 text-sm">قيد الانتظار</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4.8/5</div>
+                <p class="text-slate-400 text-sm">متوسط التقييم</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('scheduled')">
+                <i class="fas fa-calendar-alt ml-2"></i> الصيانات المجدولة
+            </button>
+            <button class="tab-btn" onclick="switchTab('queue')">
+                <i class="fas fa-list ml-2"></i> قائمة الانتظار
+            </button>
+            <button class="tab-btn" onclick="switchTab('history')">
+                <i class="fas fa-history ml-2"></i> السجل التاريخي
+            </button>
+            <button class="tab-btn" onclick="switchTab('contractors')">
+                <i class="fas fa-user-tie ml-2"></i> المقاولون
+            </button>
+        </div>
+
+        <!-- Tab: Scheduled Maintenance -->
+        <div id="scheduled" class="tab-content active">
+            <div class="glass-card p-8 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">الصيانات المجدولة</h3>
+                    <button class="btn-primary" onclick="openScheduleModal()">
+                        <i class="fas fa-plus-circle ml-2"></i> جدولة صيانة
+                    </button>
+                </div>
+
+                <div id="scheduledList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Queue -->
+        <div id="queue" class="tab-content">
+            <div class="glass-card p-8 rounded-2xl">
+                <h3 class="text-2xl font-bold mb-6">قائمة انتظار الصيانة</h3>
+
+                <div id="queueList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <div class="mt-6 p-6 bg-slate-800/50 rounded-lg text-center">
+                    <i class="fas fa-info-circle text-indigo-500 text-2xl mb-2"></i>
+                    <p class="text-sm text-slate-400">الصيانات في قائمة الانتظار ستتم معالجتها تدريجياً</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: History -->
+        <div id="history" class="tab-content">
+            <div class="glass-card p-8 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">السجل التاريخي</h3>
+                    <div class="flex gap-2">
+                        <button 
+                            onclick="exportMaintenance(history, 'excel')"
+                            class="btn-secondary text-sm"
+                            style="padding: 8px 16px; font-size: 13px;"
+                        >
+                            <i class="fas fa-file-excel ml-1"></i>
+                            Excel
+                        </button>
+                        <button 
+                            onclick="exportMaintenance(history, 'csv')"
+                            class="btn-secondary text-sm"
+                            style="padding: 8px 16px; font-size: 13px;"
+                        >
+                            <i class="fas fa-file-csv ml-1"></i>
+                            CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div id="historyList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Contractors -->
+        <div id="contractors" class="tab-content">
+            <div class="space-y-6">
+                <div class="glass-card p-8 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">المقاولون والفنيون المعتمدون</h3>
+                        <button class="btn-primary" onclick="openAddContractorModal()">
+                            <i class="fas fa-plus-circle ml-2"></i> إضافة مقاول
+                        </button>
+                    </div>
+
+                    <div id="contractorsList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Schedule Maintenance Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">جدولة صيانة جديدة</h3>
+                <button onclick="closeModal('scheduleModal')" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-2">نوع الصيانة</label>
+                    <select class="form-input w-full">
+                        <option>اختر نوع الصيانة</option>
+                        <option>صيانة المصعد</option>
+                        <option>صيانة الكهرباء</option>
+                        <option>صيانة المياه</option>
+                        <option>تنظيف عام</option>
+                        <option>صيانة الأسطح</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">التاريخ</label>
+                    <input type="date" class="form-input w-full">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">الوقت</label>
+                    <input type="time" class="form-input w-full">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">الوصف</label>
+                    <textarea placeholder="اكتب تفاصيل الصيانة" rows="4" class="form-input w-full"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold mb-2">الأولوية</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="priority" value="high" class="mr-2">
+                            <span class="text-sm">عاجلة</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="priority" value="normal" checked class="mr-2">
+                            <span class="text-sm">عادية</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-6">
+                <button type="button" onclick="closeModal('scheduleModal')" class="btn-secondary flex-1">إلغاء</button>
+                <button type="submit" class="btn-primary flex-1" onclick="alert('تم حفظ البيانات بنجاح'); closeModal('scheduleModal')">إضافة الطلب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contractor Modal -->
+    <div id="addContractorModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">إضافة مقاول جديد</h3>
+                <button onclick="closeModal('addContractorModal')" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <input type="text" placeholder="الاسم الكامل" class="form-input w-full">
+                <input type="text" placeholder="التخصص" class="form-input w-full">
+                <input type="tel" placeholder="رقم الهاتف" class="form-input w-full">
+                <input type="email" placeholder="البريد الإلكتروني" class="form-input w-full">
+                <textarea placeholder="ملاحظات" rows="3" class="form-input w-full"></textarea>
+            </div>
+
+            <button class="btn-primary w-full mt-6" onclick="alert('تمت إضافة المقاول بنجاح'); closeModal('addContractorModal')">
+                <i class="fas fa-plus-circle ml-2"></i> إضافة مقاول
+            </button>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold mb-2">تقييم الخدمة</h3>
+                <p class="text-slate-400">كيف تقيم جودة الصيانة؟</p>
+            </div>
+
+            <div class="text-center mb-6">
+                <div class="rating-stars" id="serviceRating">
+                    ${Array.from({length: 5}).map((_, i) => `
+                        <span class="star" onclick="selectRating(${i + 1})">${i + 1}</span>
+                    `).join('')}
+                </div>
+            </div>
+
+            <textarea placeholder="اكتب ملاحظاتك..." rows="4" class="form-input w-full mb-6"></textarea>
+
+            <button class="btn-primary w-full" onclick="submitRating()">
+                <i class="fas fa-paper-plane ml-2"></i> إرسال التقييم
+            </button>
+        </div>
+    </div>
+
+    <!-- Data Manager Script -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // تحميل نظام التنقل المناسب بناءً على نوع المستخدم
+        const navigationScript = document.createElement('script');
+        if (isAdmin()) {
+            navigationScript.src = '../js/admin-navigation.js';
+        } else {
+            navigationScript.src = '../js/user-navigation.js';
+        }
+        document.head.appendChild(navigationScript);
+    </script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/export.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/reminders.js"></script>
+    
+    <script>
+        // حماية الصفحة
+        if (!protectSharedPage()) {
+            // سيتم إعادة التوجيه
+        }
+
+        let maintenances = [];
+        let queue = [];
+        let history = [];
+        const isAdminUser = isAdmin(); // تحديد نوع المستخدم
+        let contractors = [
+            {
+                id: 1,
+                name: 'أحمد الفني',
+                specialty: 'صيانة المصاعد',
+                phone: '0123456789',
+                rating: 5,
+                jobs: 15
+            },
+            {
+                id: 2,
+                name: 'محمود الكهربائي',
+                specialty: 'الكهرباء والإنارة',
+                phone: '0987654321',
+                rating: 4.8,
+                jobs: 12
+            },
+            {
+                id: 3,
+                name: 'فريق التنظيف',
+                specialty: 'التنظيف والنظافة',
+                phone: '0111111111',
+                rating: 4.5,
+                jobs: 25
+            }
+        ];
+        
+        // Load data from dataManager
+        function loadData() {
+            const allMaintenance = dataManager.getMaintenance();
+            
+            // المسئول يرى كل الصيانات، المالك يرى صيانته فقط
+            let displayMaintenance;
+            if (isAdminUser) {
+                displayMaintenance = allMaintenance; // المسئول يرى الكل
+            } else {
+                const unitNumber = sessionStorage.getItem('unitNumber') || '304';
+                displayMaintenance = allMaintenance.filter(m => m.unitNumber === unitNumber); // المالك يرى بياناته فقط
+            }
+            
+            maintenances = displayMaintenance.filter(m => m.status === 'مجدول' || m.status === 'قيد التنفيذ');
+            queue = displayMaintenance.filter(m => m.status === 'في الانتظار');
+            history = displayMaintenance.filter(m => m.status === 'مكتمل');
+        }
+        
+        // Initialize
+        loadData();
+        updateStatistics();
+        
+        function updateStatistics() {
+            const stats = dataManager.getStatistics();
+            const allMaintenance = dataManager.getMaintenance();
+            
+            document.querySelector('.stat-box:nth-child(1) .stat-number').textContent = allMaintenance.length;
+            document.querySelector('.stat-box:nth-child(2) .stat-number').textContent = stats.completedMaintenance;
+            document.querySelector('.stat-box:nth-child(3) .stat-number').textContent = stats.activeMaintenance;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+
+            if (tab === 'scheduled') {
+                loadScheduled();
+            } else if (tab === 'queue') {
+                loadQueue();
+            } else if (tab === 'history') {
+                loadHistory();
+            } else if (tab === 'contractors') {
+                loadContractors();
+            }
+        }
+
+        function loadScheduled() {
+            const list = document.getElementById('scheduledList');
+            list.innerHTML = '';
+
+            maintenances.forEach(m => {
+                const statusBadgeClass = m.status === 'مجدول' ? 'status-scheduled' : 
+                                        m.status === 'قيد التنفيذ' ? 'status-inprogress' : 'status-completed';
+                const statusText = m.status;
+                const priorityClass = m.priority === 'عاجلة' ? 'urgent' : 'normal';
+                
+                // إضافة رقم الوحدة للمسئول
+                const unitInfo = isAdminUser ? `<p class="text-xs text-indigo-400">الوحدة: ${m.unitNumber} - ${m.residentName || 'غير محدد'}</p>` : '';
+
+                const html = `
+                    <div class="maintenance-card ${priorityClass}">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <p class="font-bold text-lg">${m.type}</p>
+                                ${unitInfo}
+                                <p class="text-sm text-slate-400">${m.description}</p>
+                            </div>
+                            <span class="status-badge ${statusBadgeClass}">${statusText}</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar text-indigo-500"></i>
+                                <span>${m.scheduledDate || m.requestDate}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-user text-indigo-500"></i>
+                                <span>${m.contractor || 'غير محدد'}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-money-bill text-indigo-500"></i>
+                                <span>${m.cost} ج.م</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-flag ${m.priority === 'عاجلة' ? 'text-red-500' : 'text-green-500'}"></i>
+                                <span>${m.priority}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button class="btn-small flex-1">
+                                <i class="fas fa-edit ml-1"></i> تعديل
+                            </button>
+                            <button class="btn-small flex-1" onclick="cancelMaintenance(${m.id})">
+                                <i class="fas fa-trash-alt ml-1"></i> إلغاء
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += html;
+            });
+            
+            if (maintenances.length === 0) {
+                list.innerHTML = '<p class="text-center text-slate-400 py-8">لا توجد صيانات مجدولة حالياً</p>';
+            }
+        }
+        
+        function cancelMaintenance(id) {
+            if (confirm('هل أنت متأكد من إلغاء هذه الصيانة؟')) {
+                // In a real app, you would delete or update status
+                alert('تم إلغاء الصيانة');
+                loadData();
+                loadScheduled();
+            }
+        }
+
+        function loadQueue() {
+            const list = document.getElementById('queueList');
+            list.innerHTML = '';
+
+            queue.forEach((q, index) => {
+                // إضافة رقم الوحدة للمسئول
+                const unitInfo = isAdminUser ? `<p class="text-xs text-indigo-400">الوحدة: ${q.unitNumber} - ${q.residentName || 'غير محدد'}</p>` : '';
+                
+                const html = `
+                    <div class="maintenance-card normal">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <p class="font-bold text-lg">${q.type}</p>
+                                ${unitInfo}
+                                <p class="text-xs text-slate-400">رقم الطلب: ${q.id}</p>
+                            </div>
+                            <span class="status-badge status-scheduled">رقم ${index + 1}</span>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar text-indigo-500"></i>
+                                <span>تاريخ الطلب: ${q.submittedDate}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-flag ${q.priority === 'high' ? 'text-red-500' : 'text-green-500'}"></i>
+                                <span>${q.priority === 'high' ? 'عاجلة' : 'عادية'}</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-small w-full">
+                            <i class="fas fa-trash-alt ml-1"></i> إلغاء الطلب
+                        </button>
+                    </div>
+                `;
+                list.innerHTML += html;
+            });
+        }
+
+        function loadHistory() {
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+
+            history.forEach(h => {
+                const stars = Array.from({length: 5}).map((_, i) => 
+                    `<i class="fas fa-star ${i < (h.rating || 0) ? 'text-yellow-400' : 'text-slate-600'}"></i>`
+                ).join('');
+                
+                // إضافة رقم الوحدة للمسئول
+                const unitInfo = isAdminUser ? `<p class="text-xs text-indigo-400">الوحدة: ${h.unitNumber} - ${h.residentName || 'غير محدد'}</p>` : '';
+
+                const html = `
+                    <div class="maintenance-card normal">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <p class="font-bold text-lg">${h.type}</p>
+                                ${unitInfo}
+                                <p class="text-sm text-slate-400">${h.notes || h.description}</p>
+                            </div>
+                            <span class="status-badge status-completed">✓ اكتملت</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-calendar text-indigo-500"></i>
+                                <span>${h.scheduledDate || h.requestDate}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-user text-indigo-500"></i>
+                                <span>${h.contractor}</span>
+                            </div>
+                        </div>
+
+                        ${h.rating ? `
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="text-sm">التقييم:</span>
+                                <div class="flex gap-1">${stars}</div>
+                            </div>
+                        ` : ''}
+
+                        <button class="btn-small w-full">
+                            <i class="fas fa-download ml-1"></i> تحميل التقرير
+                        </button>
+                    </div>
+                `;
+                list.innerHTML += html;
+            });
+            
+            if (history.length === 0) {
+                list.innerHTML = '<p class="text-center text-slate-400 py-8">لا يوجد سجل صيانة سابق</p>';
+            }
+        }
+
+        function loadContractors() {
+            const list = document.getElementById('contractorsList');
+            list.innerHTML = '';
+
+            contractors.forEach(c => {
+                const stars = Array.from({length: 5}).map((_, i) => 
+                    `<i class="fas fa-star ${i < Math.floor(c.rating) ? 'text-yellow-400' : 'text-slate-600'} text-sm"></i>`
+                ).join('');
+
+                const html = `
+                    <div class="contractor-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="font-bold text-lg">${c.name}</p>
+                                <p class="text-sm text-slate-400">${c.specialty}</p>
+                            </div>
+                            <span class="contractor-badge">
+                                <i class="fas fa-star"></i>
+                                ${c.rating}/5 (${c.jobs} وظيفة)
+                            </span>
+                        </div>
+
+                        <div class="flex gap-1 mb-4">${stars}</div>
+
+                        <div class="flex items-center gap-4 mb-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-phone text-indigo-500"></i>
+                                <span>${c.phone}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button class="btn-small flex-1">
+                                <i class="fas fa-phone ml-1"></i> الاتصال
+                            </button>
+                            <button class="btn-small flex-1">
+                                <i class="fas fa-calendar ml-1"></i> حجز موعد
+                            </button>
+                            <button class="btn-small flex-1">
+                                <i class="fas fa-trash-alt ml-1"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += html;
+            });
+        }
+
+        function openScheduleModal() {
+            document.getElementById('scheduleModal').classList.add('active');
+        }
+
+        function openAddContractorModal() {
+            document.getElementById('addContractorModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function selectRating(rating) {
+            document.querySelectorAll('#serviceRating .star').forEach((star, i) => {
+                if (i < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function submitRating() {
+            alert('شكراً لتقييمك!');
+            closeModal('ratingModal');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadScheduled();
+        });
+    </script>
+    
+    <!-- Auth & Dynamic Navigation Scripts -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // حماية الصفحة - صفحة مشتركة
+        if (!protectSharedPage()) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+        
+        // تحميل نظام التنقل المناسب بناءً على نوع المستخدم
+        const navigationScript = document.createElement('script');
+        if (isAdmin()) {
+            navigationScript.src = '../js/admin-navigation.js';
+        } else {
+            navigationScript.src = '../js/user-navigation.js';
+        }
+        document.head.appendChild(navigationScript);
+    </script>
+</body>
+</html>

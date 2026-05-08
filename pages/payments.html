@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الدفع المتكامل | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .payment-method {
+            padding: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .payment-method:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .payment-method.active {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .method-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .invoice-card {
+            border-right: 4px solid #6366f1;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.05);
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .invoice-card:hover {
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateX(-4px);
+        }
+
+        .invoice-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-overdue {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #6366f1;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 2px solid #6366f1;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .amount-display {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .receipt-container {
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            padding: 24px;
+            border-radius: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 2;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #06b6d4);
+            transition: width 0.3s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            right: 5px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: #6366f1;
+            border-radius: 50%;
+            margin-right: 20px;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #6366f1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .glass-card {
+                background: white;
+                border: 1px solid #ccc;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <h1 class="text-lg font-black hidden sm:block">نظام <span class="text-indigo-500">الدفع</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="logout()" class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg border border-red-500/20 transition-all text-sm font-bold">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج</span>
+                </button>
+                <div class="text-sm">
+                    <p class="text-slate-400">الوحدة</p>
+                    <p class="font-bold">304</p>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Header -->
+        <div>
+            <h2 class="text-3xl font-bold mb-2">نظام الدفع المتكامل</h2>
+            <p class="text-slate-400">إدارة دفعاتك وفواتيرك بسهولة وأمان</p>
+        </div>
+
+        <!-- Payment Statistics -->
+        <div class="statistics-grid">
+            <div class="stat-box">
+                <div class="stat-number" id="totalPaid">2,400</div>
+                <div class="stat-label">إجمالي المدفوع</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="pendingAmount">200</div>
+                <div class="stat-label">المبلغ المستحق</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="paidPercentage">92%</div>
+                <div class="stat-label">نسبة السداد</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="daysLeft">9</div>
+                <div class="stat-label">أيام للسداد</div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Payment Options -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Current Payment -->
+                <div class="glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6">الفاتورة الحالية</h3>
+                    
+                    <div class="bg-gradient-to-r from-indigo-600/20 to-emerald-600/20 p-8 rounded-2xl mb-8">
+                        <p class="text-slate-400 text-sm mb-2">المبلغ المطلوب</p>
+                        <div class="amount-display">200.00</div>
+                        <p class="text-slate-400 text-sm mt-2">ج.م</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8 text-sm">
+                        <div class="p-4 bg-slate-800/50 rounded-lg">
+                            <p class="text-slate-400">الشهر</p>
+                            <p class="font-bold text-lg">مايو 2026</p>
+                        </div>
+                        <div class="p-4 bg-slate-800/50 rounded-lg">
+                            <p class="text-slate-400">موعد السداد</p>
+                            <p class="font-bold text-lg">15/05/2026</p>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary w-full mb-4">
+                        <i class="fas fa-bolt ml-2"></i> دفع الآن
+                    </button>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6">طرق الدفع المتاحة</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <!-- Instapay -->
+                        <div class="payment-method" onclick="selectMethod(this, 'instapay')">
+                            <div class="method-icon">
+                                <i class="fas fa-mobile-alt text-indigo-500"></i>
+                            </div>
+                            <p class="font-bold">InstaPay</p>
+                            <p class="text-xs text-slate-400 mt-1">تحويل فوري</p>
+                        </div>
+
+                        <!-- Vodafone Cash -->
+                        <div class="payment-method" onclick="selectMethod(this, 'vodafone')">
+                            <div class="method-icon">
+                                <i class="fas fa-wallet text-red-500"></i>
+                            </div>
+                            <p class="font-bold">فودافون كاش</p>
+                            <p class="text-xs text-slate-400 mt-1">محفظة رقمية</p>
+                        </div>
+
+                        <!-- Orange Money -->
+                        <div class="payment-method" onclick="selectMethod(this, 'orange')">
+                            <div class="method-icon">
+                                <i class="fas fa-coins text-orange-500"></i>
+                            </div>
+                            <p class="font-bold">أورنج موني</p>
+                            <p class="text-xs text-slate-400 mt-1">محفظة رقمية</p>
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div class="payment-method" onclick="selectMethod(this, 'bank')">
+                            <div class="method-icon">
+                                <i class="fas fa-university text-emerald-500"></i>
+                            </div>
+                            <p class="font-bold">تحويل بنكي</p>
+                            <p class="text-xs text-slate-400 mt-1">بيانات بنكية</p>
+                        </div>
+
+                        <!-- Credit Card -->
+                        <div class="payment-method" onclick="selectMethod(this, 'card')">
+                            <div class="method-icon">
+                                <i class="fas fa-credit-card text-blue-500"></i>
+                            </div>
+                            <p class="font-bold">بطاقة ائتمان</p>
+                            <p class="text-xs text-slate-400 mt-1">Visa / Mastercard</p>
+                        </div>
+
+                        <!-- Cash Payment -->
+                        <div class="payment-method" onclick="selectMethod(this, 'cash')">
+                            <div class="method-icon">
+                                <i class="fas fa-money-bill-wave text-green-500"></i>
+                            </div>
+                            <p class="font-bold">دفع كاش</p>
+                            <p class="text-xs text-slate-400 mt-1">عند الإدارة</p>
+                        </div>
+                    </div>
+
+                    <div id="methodDetails" style="display: none;" class="bg-slate-800/50 p-6 rounded-xl mb-6"></div>
+
+                    <button class="btn-primary w-full" onclick="processPayment()">
+                        <i class="fas fa-check-circle ml-2"></i> تأكيد الدفع
+                    </button>
+                </div>
+
+                <!-- Invoice History -->
+                <div class="glass-card p-8 rounded-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">سجل الفواتير</h3>
+                        <div class="flex gap-2">
+                            <button 
+                                onclick="exportPayments(filteredPayments, 'excel')"
+                                class="btn-secondary text-sm"
+                                style="padding: 8px 16px; font-size: 13px;"
+                            >
+                                <i class="fas fa-file-excel ml-1"></i>
+                                Excel
+                            </button>
+                            <button 
+                                onclick="exportPayments(filteredPayments, 'csv')"
+                                class="btn-secondary text-sm"
+                                style="padding: 8px 16px; font-size: 13px;"
+                            >
+                                <i class="fas fa-file-csv ml-1"></i>
+                                CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- البحث والفلترة -->
+                    <div class="mb-6">
+                        <!-- شريط البحث -->
+                        <div style="position: relative; margin-bottom: 16px;">
+                            <i class="fas fa-search" style="
+                                position: absolute;
+                                right: 16px;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                color: #6366f1;
+                                font-size: 16px;
+                            "></i>
+                            <input 
+                                type="text" 
+                                id="paymentSearch"
+                                placeholder="ابحث في الفواتير..."
+                                style="
+                                    width: 100%;
+                                    padding: 12px 16px 12px 48px;
+                                    background: rgba(30, 41, 59, 0.5);
+                                    border: 1px solid rgba(99, 102, 241, 0.2);
+                                    border-radius: 12px;
+                                    color: #f1f5f9;
+                                    font-family: 'Cairo', sans-serif;
+                                    transition: all 0.3s ease;
+                                "
+                                onfocus="this.style.borderColor='#6366f1'; this.style.background='rgba(30, 41, 59, 0.8)'"
+                                onblur="this.style.borderColor='rgba(99, 102, 241, 0.2)'; this.style.background='rgba(30, 41, 59, 0.5)'"
+                                oninput="applyPaymentFilters()"
+                            >
+                        </div>
+
+                        <!-- الفلاتر -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <select 
+                                id="statusFilter"
+                                onchange="applyPaymentFilters()"
+                                style="
+                                    padding: 10px 12px;
+                                    background: rgba(30, 41, 59, 0.5);
+                                    border: 1px solid rgba(99, 102, 241, 0.2);
+                                    border-radius: 8px;
+                                    color: #f1f5f9;
+                                    font-family: 'Cairo', sans-serif;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >
+                                <option value="all">كل الحالات</option>
+                                <option value="مدفوع">مدفوع</option>
+                                <option value="قيد الانتظار">قيد الانتظار</option>
+                                <option value="متأخر">متأخر</option>
+                            </select>
+
+                            <select 
+                                id="yearFilter"
+                                onchange="applyPaymentFilters()"
+                                style="
+                                    padding: 10px 12px;
+                                    background: rgba(30, 41, 59, 0.5);
+                                    border: 1px solid rgba(99, 102, 241, 0.2);
+                                    border-radius: 8px;
+                                    color: #f1f5f9;
+                                    font-family: 'Cairo', sans-serif;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                "
+                            >
+                                <option value="">كل السنوات</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                            </select>
+                        </div>
+
+                        <!-- عداد النتائج -->
+                        <div id="paymentResultsCount" class="text-sm text-slate-400 mt-3"></div>
+                    </div>
+
+                    <div id="invoicesList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="space-y-8">
+                
+                <!-- Payment Status -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">حالة السداد</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>هذا الشهر</span>
+                                <span class="font-bold">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span>العام الحالي</span>
+                                <span class="font-bold">92%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                        <p class="text-sm text-emerald-400 font-bold">✓ وضعك مميز</p>
+                        <p class="text-xs text-emerald-300 mt-1">نسبة سداد عالية جداً</p>
+                    </div>
+                </div>
+
+                <!-- Quick Info -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">معلومات مهمة</h3>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <p class="text-slate-400">رقم الوحدة</p>
+                            <p class="font-bold">304</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-4">
+                            <p class="text-slate-400">صاحب الوحدة</p>
+                            <p class="font-bold">أحمد محمد علي</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-4">
+                            <p class="text-slate-400">رقم العضوية</p>
+                            <p class="font-bold text-indigo-400">MEM-304-2026</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History Widget -->
+                <div class="glass-card p-6 rounded-2xl">
+                    <h3 class="text-lg font-bold mb-4">آخر المعاملات</h3>
+                    
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
+                            <div>
+                                <p class="font-bold">دفعة شهرية</p>
+                                <p class="text-slate-400 text-xs">04/05/2026</p>
+                            </div>
+                            <span class="text-emerald-400 font-bold">+200 ج.م</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
+                            <div>
+                                <p class="font-bold">دفعة شهرية</p>
+                                <p class="text-slate-400 text-xs">02/04/2026</p>
+                            </div>
+                            <span class="text-emerald-400 font-bold">+200 ج.م</span>
+                        </div>
+                        <div class="flex justify-between p-3 bg-slate-800/50 rounded-lg">
+                            <div>
+                                <p class="font-bold">دفعة شهرية</p>
+                                <p class="text-slate-400 text-xs">01/03/2026</p>
+                            </div>
+                            <span class="text-emerald-400 font-bold">+200 ج.م</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">تأكيد الدفع</h3>
+                <button onclick="closeModal()" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="bg-slate-800/50 p-6 rounded-lg mb-6">
+                <p class="text-slate-400 text-sm mb-2">المبلغ المطلوب</p>
+                <p class="text-3xl font-bold text-indigo-400">200.00 ج.م</p>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <div class="flex justify-between p-4 bg-slate-800/50 rounded-lg">
+                    <span class="text-slate-400">الشهر</span>
+                    <span class="font-bold">مايو 2026</span>
+                </div>
+                <div class="flex justify-between p-4 bg-slate-800/50 rounded-lg">
+                    <span class="text-slate-400">طريقة الدفع</span>
+                    <span class="font-bold" id="selectedMethodDisplay">--</span>
+                </div>
+                <div class="flex justify-between p-4 bg-slate-800/50 rounded-lg">
+                    <span class="text-slate-400">التاريخ</span>
+                    <span class="font-bold" id="transactionDate">--</span>
+                </div>
+            </div>
+
+            <div class="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-lg mb-6">
+                <p class="text-sm text-emerald-400">✓ معاملة آمنة ومشفرة</p>
+            </div>
+
+            <div class="flex gap-4">
+                <button class="btn-primary flex-1" onclick="confirmPayment()">
+                    <i class="fas fa-check-circle ml-2"></i> تأكيد
+                </button>
+                <button class="btn-secondary flex-1" onclick="closeModal()">
+                    <i class="fas fa-times-circle ml-2"></i> إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">إيصال الدفع</h3>
+                <button onclick="closeReceiptModal()" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="receipt-container mb-6">
+                <div class="receipt-header">
+                    <p class="text-xl font-bold">🏢 بوابة الهدى الرقمية</p>
+                    <p class="text-xs text-slate-400">Receipt / إيصال</p>
+                </div>
+
+                <div class="space-y-2 border-b border-slate-600 pb-4 mb-4">
+                    <div class="receipt-item">
+                        <span>تاريخ:</span>
+                        <span id="receiptDate">--</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>الوقت:</span>
+                        <span id="receiptTime">--</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>رقم الإيصال:</span>
+                        <span id="receiptNumber">--</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2 border-b border-slate-600 pb-4 mb-4">
+                    <div class="receipt-item">
+                        <span>الوحدة:</span>
+                        <span>304</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>المبلغ:</span>
+                        <span>200.00 ج.م</span>
+                    </div>
+                    <div class="receipt-item">
+                        <span>الطريقة:</span>
+                        <span id="receiptMethod">--</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2 pb-4">
+                    <div class="receipt-item">
+                        <span>الحالة:</span>
+                        <span class="text-emerald-400 font-bold">✓ تم</span>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-slate-500 border-t border-slate-600 pt-4">
+                    <p>شكراً لك على سدادك في الوقت المناسب</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button class="btn-primary flex-1 no-print" onclick="printReceipt()">
+                    <i class="fas fa-print ml-2"></i> طباعة
+                </button>
+                <button class="btn-secondary flex-1 no-print" onclick="downloadReceipt()">
+                    <i class="fas fa-download ml-2"></i> تحميل PDF
+                </button>
+                <button class="btn-secondary flex-1 no-print" onclick="closeReceiptModal()">
+                    <i class="fas fa-check-circle ml-2"></i> إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Manager Script -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // تحميل نظام التنقل المناسب بناءً على نوع المستخدم
+        const navigationScript = document.createElement('script');
+        if (isAdmin()) {
+            navigationScript.src = '../js/admin-navigation.js';
+        } else {
+            navigationScript.src = '../js/user-navigation.js';
+        }
+        document.head.appendChild(navigationScript);
+    </script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/search-filter.js"></script>
+    <script src="../js/export.js"></script>
+    <script src="../js/theme.js"></script>
+    <script src="../js/reminders.js"></script>
+    
+    <script>
+        // حماية الصفحة
+        if (!protectSharedPage()) {
+            // سيتم إعادة التوجيه
+        }
+
+        let selectedMethod = null;
+        let payments = [];
+        let currentUser = null;
+        let filteredPayments = []; // للبحث والفلترة
+        const isAdminUser = isAdmin(); // تحديد نوع المستخدم
+
+        // Load data from dataManager
+        function loadData() {
+            payments = dataManager.getPayments();
+            const unitNumber = sessionStorage.getItem('unitNumber') || '304';
+            currentUser = dataManager.getResidents().find(r => r.unit === unitNumber);
+            applyPaymentFilters(); // تطبيق الفلترة عند التحميل
+        }
+
+        // Initialize on page load
+        loadData();
+
+        const paymentMethods = {
+            instapay: {
+                name: 'InstaPay',
+                details: '<p class="font-bold mb-2">بيانات التحويل:</p><p class="text-slate-400 text-sm">اسم المستقبل: بوابة الهدى</p><p class="text-slate-400 text-sm">رقم الحساب: 1234567890</p><p class="text-sm text-emerald-400 mt-3">✓ سهل وسريع - لحظات معدودة</p>'
+            },
+            vodafone: {
+                name: 'فودافون كاش',
+                details: '<p class="font-bold mb-2">طريقة الدفع:</p><p class="text-slate-400 text-sm">اتصل بـ *100# أو استخدم التطبيق</p><p class="text-slate-400 text-sm">الرقم المرجعي: 1304-BH-26</p><p class="text-sm text-emerald-400 mt-3">✓ فوري وآمن</p>'
+            },
+            orange: {
+                name: 'أورنج موني',
+                details: '<p class="font-bold mb-2">طريقة الدفع:</p><p class="text-slate-400 text-sm">اتصل بـ *123# أو استخدم التطبيق</p><p class="text-slate-400 text-sm">الرقم المرجعي: 1304-BH-26</p><p class="text-sm text-emerald-400 mt-3">✓ فوري وآمن</p>'
+            },
+            bank: {
+                name: 'تحويل بنكي',
+                details: '<p class="font-bold mb-2">بيانات البنك:</p><p class="text-slate-400 text-sm">البنك: البنك الأهلي</p><p class="text-slate-400 text-sm">الحساب: 1234567890</p><p class="text-slate-400 text-sm">IBAN: EG76 0019 0005 1234</p><p class="text-sm text-warning mt-3">⚠️ قد يستغرق 1-3 أيام عمل</p>'
+            },
+            card: {
+                name: 'بطاقة ائتمان',
+                details: '<p class="font-bold mb-2">بيانات البطاقة:</p><p class="text-slate-400 text-sm">سيتم تحويلك لصفحة دفع آمنة</p><p class="text-slate-400 text-sm">نقبل: Visa و Mastercard</p><p class="text-sm text-emerald-400 mt-3">✓ آمن وفوري</p>'
+            },
+            cash: {
+                name: 'دفع كاش',
+                details: '<p class="font-bold mb-2">طريقة الدفع:</p><p class="text-slate-400 text-sm">توجه إلى إدارة البرج</p><p class="text-slate-400 text-sm">ساعات العمل: 9 ص - 5 م</p><p class="text-sm text-warning mt-3">⚠️ يرجى احضار هذا الإيصال</p>'
+            }
+        };
+
+        function selectMethod(element, method) {
+            document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            selectedMethod = method;
+            
+            const details = document.getElementById('methodDetails');
+            details.innerHTML = paymentMethods[method].details;
+            details.style.display = 'block';
+        }
+
+        // تطبيق البحث والفلترة
+        function applyPaymentFilters() {
+            const searchQuery = document.getElementById('paymentSearch')?.value || '';
+            const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+            const yearFilter = document.getElementById('yearFilter')?.value || '';
+            
+            // المسئول يرى كل المدفوعات، المالك يرى مدفوعاته فقط
+            let displayPayments;
+            if (isAdminUser) {
+                displayPayments = payments;
+            } else {
+                const unitNumber = sessionStorage.getItem('unitNumber') || '304';
+                displayPayments = payments.filter(p => p.unitNumber === unitNumber);
+            }
+            
+            // تطبيق الفلترة
+            filteredPayments = filterPayments(displayPayments, {
+                search: searchQuery,
+                status: statusFilter,
+                year: yearFilter
+            });
+            
+            // عرض النتائج
+            initializeInvoices();
+            
+            // تحديث عداد النتائج
+            const resultsCount = document.getElementById('paymentResultsCount');
+            if (resultsCount) {
+                if (displayPayments.length === filteredPayments.length) {
+                    resultsCount.innerHTML = `<i class="fas fa-list ml-1"></i> عرض ${filteredPayments.length} فاتورة`;
+                } else {
+                    resultsCount.innerHTML = `<i class="fas fa-filter ml-1"></i> عرض ${filteredPayments.length} من ${displayPayments.length} فاتورة`;
+                }
+            }
+        }
+
+        function initializeInvoices() {
+            const invoicesList = document.getElementById('invoicesList');
+            invoicesList.innerHTML = '';
+            
+            // استخدام البيانات المفلترة
+            const displayPayments = filteredPayments.length > 0 || document.getElementById('paymentSearch')?.value || document.getElementById('statusFilter')?.value !== 'all' || document.getElementById('yearFilter')?.value
+                ? filteredPayments 
+                : (isAdminUser ? payments : payments.filter(p => p.unitNumber === (sessionStorage.getItem('unitNumber') || '304')));
+            
+            if (displayPayments.length === 0) {
+                invoicesList.innerHTML = '<p class="text-center text-slate-400 py-8">لا توجد فواتير تطابق البحث</p>';
+                return;
+            }
+            
+            displayPayments.forEach(payment => {
+                const statusClass = payment.status === 'مدفوع' ? 'status-paid' : 'status-pending';
+                const statusText = payment.status === 'مدفوع' ? '✓ تم الدفع' : '⏳ قيد الانتظار';
+                
+                // إضافة رقم الوحدة للمسئول
+                const unitInfo = isAdminUser ? `<p class="text-xs text-indigo-400">الوحدة: ${payment.unitNumber} - ${payment.residentName}</p>` : '';
+                
+                const invoiceHTML = `
+                    <div class="invoice-card">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-bold">${payment.month}</p>
+                                ${unitInfo}
+                                <p class="text-xs text-slate-400">التاريخ: ${payment.date || 'غير محدد'}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-lg">${payment.amount}.00 ج.م</p>
+                                <span class="invoice-status ${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <button class="text-xs px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-white transition" onclick="viewPayment(${payment.id})">عرض</button>
+                            ${payment.status !== 'مدفوع' && !isAdminUser ? '<button class="text-xs px-3 py-1 bg-emerald-600 hover:bg-emerald-500 rounded text-white transition" onclick="processPayment()">دفع</button>' : ''}
+                            <button class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-white transition" onclick="downloadReceipt()">تحميل</button>
+                        </div>
+                    </div>
+                `;
+                invoicesList.innerHTML += invoiceHTML;
+            });
+            
+            if (displayPayments.length === 0) {
+                invoicesList.innerHTML = '<p class="text-center text-slate-400 py-8">لا توجد فواتير</p>';
+            }
+        }
+
+        function processPayment() {
+            if (!selectedMethod) {
+                alert('يرجى اختيار طريقة دفع أولاً');
+                return;
+            }
+            
+            document.getElementById('selectedMethodDisplay').textContent = paymentMethods[selectedMethod].name;
+            document.getElementById('transactionDate').textContent = new Date().toLocaleDateString('ar-EG');
+            
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function confirmPayment() {
+            closeModal();
+            
+            const unitNumber = sessionStorage.getItem('unitNumber') || '304';
+            const resident = dataManager.getResidents().find(r => r.unit === unitNumber);
+            
+            // Add payment to dataManager
+            const newPayment = {
+                unitNumber: unitNumber,
+                residentName: resident ? resident.name : 'أحمد محمد علي',
+                amount: 200,
+                month: 'مايو 2026',
+                method: paymentMethods[selectedMethod].name,
+                status: 'مدفوع'
+            };
+            
+            const savedPayment = dataManager.addPayment(newPayment);
+            
+            // Reload data
+            loadData();
+            updateStatistics();
+            initializeInvoices();
+            
+            // Show receipt
+            showReceipt(savedPayment);
+        }
+
+        function showReceipt(payment) {
+            const now = new Date();
+            document.getElementById('receiptDate').textContent = now.toLocaleDateString('ar-EG');
+            document.getElementById('receiptTime').textContent = now.toLocaleTimeString('ar-EG');
+            document.getElementById('receiptNumber').textContent = payment.receiptNumber;
+            document.getElementById('receiptMethod').textContent = payment.method;
+            
+            document.getElementById('receiptModal').classList.add('active');
+        }
+        
+        function viewPayment(id) {
+            const payment = payments.find(p => p.id === id);
+            if (payment && payment.receiptNumber) {
+                const paymentDate = payment.date ? new Date(payment.date) : new Date();
+                document.getElementById('receiptDate').textContent = paymentDate.toLocaleDateString('ar-EG');
+                document.getElementById('receiptTime').textContent = '--';
+                document.getElementById('receiptNumber').textContent = payment.receiptNumber;
+                document.getElementById('receiptMethod').textContent = payment.method || '--';
+                document.getElementById('receiptModal').classList.add('active');
+            }
+        }
+        
+        function updateStatistics() {
+            // المسئول يرى إحصائيات الكل، المالك يرى إحصائياته فقط
+            let statsPayments;
+            if (isAdminUser) {
+                statsPayments = payments; // المسئول يرى الكل
+            } else {
+                const unitNumber = sessionStorage.getItem('unitNumber') || '304';
+                statsPayments = payments.filter(p => p.unitNumber === unitNumber); // المالك يرى بياناته فقط
+            }
+            
+            const paidPayments = statsPayments.filter(p => p.status === 'مدفوع');
+            const pendingPayments = statsPayments.filter(p => p.status === 'معلق');
+            
+            const totalPaid = paidPayments.reduce((sum, p) => sum + p.amount, 0);
+            const pendingAmount = pendingPayments.reduce((sum, p) => sum + p.amount, 0);
+            
+            document.getElementById('totalPaid').textContent = totalPaid.toLocaleString();
+            document.getElementById('pendingAmount').textContent = pendingAmount;
+            
+            const paidPercentage = statsPayments.length > 0 ? Math.round((paidPayments.length / statsPayments.length) * 100) : 0;
+            document.getElementById('paidPercentage').textContent = paidPercentage + '%';
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        function downloadReceipt() {
+            alert('سيتم تحميل الإيصال كـ PDF');
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').classList.remove('active');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatistics();
+            initializeInvoices();
+            
+            // تحديث عنوان الصفحة حسب نوع المستخدم
+            if (isAdminUser) {
+                document.querySelector('h2').textContent = 'إدارة المدفوعات - جميع الوحدات';
+                document.querySelector('h2 + p').textContent = 'متابعة جميع المدفوعات والفواتير في البرج';
+            }
+        });
+    </script>
+    
+    <!-- Auth & Dynamic Navigation Scripts -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        // حماية الصفحة - صفحة مشتركة
+        if (!protectSharedPage()) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+        
+        // تحميل نظام التنقل المناسب بناءً على نوع المستخدم
+        const navigationScript = document.createElement('script');
+        if (isAdmin()) {
+            navigationScript.src = '../js/admin-navigation.js';
+        } else {
+            navigationScript.src = '../js/user-navigation.js';
+        }
+        document.head.appendChild(navigationScript);
+    </script>
+</body>
+</html>

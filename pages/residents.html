@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة السكان والوحدات | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .resident-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .resident-card:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: #6366f1;
+            transform: translateX(-4px);
+        }
+
+        .unit-card {
+            background: rgba(16, 185, 129, 0.05);
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .unit-card:hover {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: #10b981;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .unit-card.occupied {
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .unit-card.vacant {
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-occupied {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-vacant {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-for-rent {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #6366f1;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 2px solid #6366f1;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-info {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+        }
+
+        .btn-info:hover {
+            background: rgba(99, 102, 241, 0.4);
+        }
+
+        .search-box {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f1f5f9;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .tab-btn.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .floor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 16px;
+            text-align: right;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+        }
+
+        table td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .info-item {
+            background: rgba(99, 102, 241, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border-right: 3px solid #6366f1;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-4 py-3 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h1 class="text-lg font-black hidden sm:block">إدارة <span class="text-indigo-500">السكان</span></h1>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="logout()" class="flex items-center gap-2 px-3 py-1.5 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg border border-red-500/20 transition-all text-sm font-bold">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>خروج</span>
+                </button>
+                <button class="w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-500 flex items-center justify-center">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 mt-8 space-y-8">
+        
+        <!-- Header -->
+        <div>
+            <h2 class="text-3xl font-bold mb-2">إدارة السكان والوحدات</h2>
+            <p class="text-slate-400">عرض وإدارة معلومات السكان والوحدات السكنية</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="stat-box">
+                <div class="stat-number">45</div>
+                <p class="text-slate-400 text-sm">إجمالي الوحدات</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">42</div>
+                <p class="text-slate-400 text-sm">وحدات مأهولة</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">3</div>
+                <p class="text-slate-400 text-sm">وحدات شاغرة</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">93.3%</div>
+                <p class="text-slate-400 text-sm">نسبة الإشغال</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('residents')">
+                <i class="fas fa-users ml-2"></i> السكان
+            </button>
+            <button class="tab-btn" onclick="switchTab('units')">
+                <i class="fas fa-home ml-2"></i> الوحدات
+            </button>
+            <button class="tab-btn" onclick="switchTab('report')">
+                <i class="fas fa-chart-bar ml-2"></i> التقارير
+            </button>
+        </div>
+
+        <!-- Tab: Residents -->
+        <div id="residents" class="tab-content active">
+            <div class="glass-card p-8 rounded-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">قائمة السكان</h3>
+                    <button class="btn-primary" onclick="openAddResidentModal()">
+                        <i class="fas fa-plus-circle ml-2"></i> إضافة ساكن
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <input type="text" placeholder="ابحث عن ساكن..." class="search-box w-full">
+                </div>
+
+                <div id="residentsList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Units -->
+        <div id="units" class="tab-content">
+            <div class="space-y-8">
+                <!-- Floor Overview -->
+                <div class="glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6">الوحدات حسب الطوابق</h3>
+
+                    <div id="floorsContainer">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Units List -->
+                <div class="glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6">قائمة الوحدات</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم الوحدة</th>
+                                    <th>النوع</th>
+                                    <th>المساحة</th>
+                                    <th>الحالة</th>
+                                    <th>المالك</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unitsTableBody">
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Report -->
+        <div id="report" class="tab-content">
+            <div class="space-y-6">
+                <div class="glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6">تقرير السكان والوحدات</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-800/50 p-6 rounded-lg">
+                            <p class="text-slate-400 text-sm mb-2">أعمار السكان</p>
+                            <div class="space-y-3 mt-4">
+                                <div>
+                                    <div class="flex justify-between mb-1 text-sm">
+                                        <span>0-18 سنة</span>
+                                        <span class="font-bold">8</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full w-1/4 bg-blue-500"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1 text-sm">
+                                        <span>18-35 سنة</span>
+                                        <span class="font-bold">15</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full w-1/3 bg-purple-500"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1 text-sm">
+                                        <span>35-60 سنة</span>
+                                        <span class="font-bold">22</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full w-1/2 bg-indigo-500"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1 text-sm">
+                                        <span>60+ سنة</span>
+                                        <span class="font-bold">12</span>
+                                    </div>
+                                    <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                        <div class="h-full w-1/3 bg-emerald-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-6 rounded-lg">
+                            <p class="text-slate-400 text-sm mb-2">نوع الملكية</p>
+                            <div class="space-y-3 mt-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">🏠 ملكية شخصية</span>
+                                    <span class="font-bold text-indigo-400">32</span>
+                                </div>
+                                <div class="flex justify-between items-center border-t border-white/5 pt-3">
+                                    <span class="text-sm">🏢 مستأجرة</span>
+                                    <span class="font-bold text-emerald-400">10</span>
+                                </div>
+                                <div class="flex justify-between items-center border-t border-white/5 pt-3">
+                                    <span class="text-sm">🔄 معروضة للبيع/الإيجار</span>
+                                    <span class="font-bold text-orange-400">3</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-8 rounded-2xl">
+                    <h3 class="text-2xl font-bold mb-6">معلومات التواصل الناقصة</h3>
+                    <div class="bg-orange-500/10 border border-orange-500/20 p-6 rounded-lg">
+                        <p class="text-orange-400 font-bold mb-2">⚠️ وحدات بدون معلومات تواصل</p>
+                        <ul class="text-sm text-orange-200 space-y-2 mt-3">
+                            <li>• الوحدة 102: رقم هاتف ناقص</li>
+                            <li>• الوحدة 205: بريد إلكتروني ناقص</li>
+                            <li>• الوحدة 304: رقم الطوارئ ناقص</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Add Resident Modal -->
+    <div id="addResidentModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">إضافة ساكن جديد</h3>
+                <button onclick="closeModal('addResidentModal')" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="addResidentForm" onsubmit="handleAddResident(event)">
+                <div class="space-y-4">
+                    <input type="text" id="newResidentName" placeholder="الاسم الكامل" class="search-box w-full" required>
+                    <input type="tel" id="newResidentPhone" placeholder="رقم الهاتف" class="search-box w-full" required>
+                    <input type="email" id="newResidentEmail" placeholder="البريد الإلكتروني" class="search-box w-full" required>
+                    <input type="tel" id="newResidentEmergency" placeholder="رقم الطوارئ" class="search-box w-full" required>
+                    <select id="newResidentUnit" class="search-box w-full" required>
+                        <option value="">اختر الوحدة</option>
+                    </select>
+                    <select id="newResidentOwnership" class="search-box w-full" required>
+                        <option value="">نوع الملكية</option>
+                        <option value="ملكية شخصية">ملكية شخصية</option>
+                        <option value="مستأجرة">مستأجرة</option>
+                    </select>
+                    <input type="number" id="newResidentAge" placeholder="العمر" class="search-box w-full" required min="18" max="100">
+                    <input type="number" id="newResidentFamily" placeholder="عدد أفراد العائلة" class="search-box w-full" required min="1" max="20">
+                </div>
+
+                <button type="submit" class="btn-primary w-full mt-6">
+                    <i class="fas fa-check-circle ml-2"></i> إضافة
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resident Details Modal -->
+    <div id="residentDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold" id="residentName">--</h3>
+                <button onclick="closeModal('residentDetailsModal')" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="contact-info">
+                <div class="info-item">
+                    <div class="info-label">رقم الهاتف</div>
+                    <div class="info-value" id="residentPhone">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">البريد الإلكتروني</div>
+                    <div class="info-value" id="residentEmail">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">رقم الوحدة</div>
+                    <div class="info-value" id="residentUnit">--</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">نوع الملكية</div>
+                    <div class="info-value" id="residentOwnershipType">--</div>
+                </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-slate-800/50 rounded-lg">
+                <p class="text-sm font-bold mb-2">تاريخ التسجيل</p>
+                <p class="text-slate-400" id="registrationDate">--</p>
+            </div>
+
+            <div class="flex gap-4 mt-6">
+                <button class="btn-primary flex-1" onclick="editResident()">
+                    <i class="fas fa-edit ml-2"></i> تعديل
+                </button>
+                <button class="btn-secondary flex-1" onclick="deleteResident()">
+                    <i class="fas fa-trash-alt ml-2"></i> حذف
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Manager Script -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin-navigation.js"></script>
+    
+    <script>
+        // حماية الصفحة
+        if (!protectAdminPage()) {
+            // سيتم إعادة التوجيه
+        }
+
+        // Get data from dataManager
+        let residents = [];
+        let units = [];
+
+        function loadData() {
+            residents = dataManager.getResidents();
+            units = dataManager.getUnits();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+
+            if (tab === 'units') {
+                loadUnitsView();
+            } else if (tab === 'report') {
+                loadReport();
+            }
+        }
+
+        function loadResidents() {
+            const residentsList = document.getElementById('residentsList');
+            residentsList.innerHTML = '';
+
+            residents.forEach(resident => {
+                const residentHTML = `
+                    <div class="resident-card" onclick="openResidentDetails(${resident.id})">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-bold text-lg">${resident.name}</p>
+                                <p class="text-sm text-slate-400">الوحدة رقم: ${resident.unit}</p>
+                                <div class="flex gap-3 mt-3 text-sm">
+                                    <span class="flex items-center gap-1">
+                                        <i class="fas fa-phone text-indigo-500"></i>
+                                        ${resident.phone}
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="badge status-${resident.ownershipType.includes('مستأجرة') ? 'for-rent' : 'occupied'}">
+                                ${resident.ownershipType}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                residentsList.innerHTML += residentHTML;
+            });
+        }
+
+        function openResidentDetails(id) {
+            const resident = residents.find(r => r.id === id);
+            document.getElementById('residentName').textContent = resident.name;
+            document.getElementById('residentPhone').textContent = resident.phone;
+            document.getElementById('residentEmail').textContent = resident.email;
+            document.getElementById('residentUnit').textContent = resident.unit;
+            document.getElementById('residentOwnershipType').textContent = resident.ownershipType;
+            document.getElementById('registrationDate').textContent = resident.registered;
+            
+            document.getElementById('residentDetailsModal').classList.add('active');
+        }
+
+        function loadUnitsView() {
+            // Load floor grid
+            const floorsContainer = document.getElementById('floorsContainer');
+            floorsContainer.innerHTML = '';
+
+            for (let floor = 1; floor <= 4; floor++) {
+                const floorUnits = units.filter(u => u.id.startsWith(floor));
+                const floorHTML = `
+                    <div>
+                        <h4 class="font-bold mb-4 text-lg">الطابق ${floor === 1 ? 'الأرضي' : floor}</h4>
+                        <div class="floor-grid">
+                            ${floorUnits.map(unit => `
+                                <div class="unit-card ${unit.status === 'vacant' ? 'vacant' : 'occupied'}" onclick="alert('الوحدة ${unit.id}')">
+                                    <p class="font-bold text-lg">${unit.id}</p>
+                                    <p class="text-xs text-slate-400 mt-1">${unit.type}</p>
+                                    <span class="status-badge status-${unit.status === 'occupied' ? 'occupied' : unit.status === 'vacant' ? 'vacant' : 'for-rent'} text-xs mt-2 inline-block">
+                                        ${unit.status === 'occupied' ? 'مأهولة' : unit.status === 'vacant' ? 'شاغرة' : 'معروضة'}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                floorsContainer.innerHTML += floorHTML;
+            }
+
+            // Load units table
+            const unitsTableBody = document.getElementById('unitsTableBody');
+            unitsTableBody.innerHTML = '';
+
+            units.forEach(unit => {
+                const statusBadgeClass = unit.status === 'occupied' ? 'status-occupied' : 
+                                        unit.status === 'vacant' ? 'status-vacant' : 'status-for-rent';
+                const statusText = unit.status === 'occupied' ? 'مأهولة' : 
+                                  unit.status === 'vacant' ? 'شاغرة' : 'معروضة للبيع/الإيجار';
+
+                const rowHTML = `
+                    <tr>
+                        <td class="font-bold">${unit.id}</td>
+                        <td>${unit.type}</td>
+                        <td>${unit.area} م²</td>
+                        <td><span class="status-badge ${statusBadgeClass}">${statusText}</span></td>
+                        <td>${unit.owner}</td>
+                        <td>
+                            <button class="btn-small btn-info">
+                                <i class="fas fa-eye ml-1"></i> عرض
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                unitsTableBody.innerHTML += rowHTML;
+            });
+        }
+
+        function loadReport() {
+            // Report is static for now
+        }
+
+        function openAddResidentModal() {
+            // Load available units
+            const unitSelect = document.getElementById('newResidentUnit');
+            unitSelect.innerHTML = '<option value="">اختر الوحدة</option>';
+            
+            units.forEach(unit => {
+                if (unit.status === 'vacant' || unit.status === 'for-rent') {
+                    const option = document.createElement('option');
+                    option.value = unit.id;
+                    option.textContent = `الوحدة ${unit.id} - ${unit.type}`;
+                    unitSelect.appendChild(option);
+                }
+            });
+            
+            document.getElementById('addResidentModal').classList.add('active');
+        }
+
+        function handleAddResident(event) {
+            event.preventDefault();
+            
+            const newResident = {
+                name: document.getElementById('newResidentName').value,
+                phone: document.getElementById('newResidentPhone').value,
+                email: document.getElementById('newResidentEmail').value,
+                emergencyPhone: document.getElementById('newResidentEmergency').value,
+                unit: document.getElementById('newResidentUnit').value,
+                ownershipType: document.getElementById('newResidentOwnership').value,
+                age: parseInt(document.getElementById('newResidentAge').value),
+                familyMembers: parseInt(document.getElementById('newResidentFamily').value)
+            };
+            
+            // Add resident
+            dataManager.addResident(newResident);
+            
+            // Update unit status
+            dataManager.updateUnit(newResident.unit, {
+                status: 'occupied',
+                owner: newResident.name
+            });
+            
+            // Reload data
+            loadData();
+            loadResidents();
+            updateStatistics();
+            
+            // Close modal and reset form
+            closeModal('addResidentModal');
+            document.getElementById('addResidentForm').reset();
+            
+            // Show success message
+            alert('تم إضافة الساكن بنجاح!');
+        }
+
+        function openAddResidentModal() {
+            document.getElementById('addResidentModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openResidentDetails(id) {
+            const resident = residents.find(r => r.id === id);
+            if (!resident) return;
+
+            document.getElementById('residentName').textContent = resident.name;
+            document.getElementById('residentPhone').textContent = resident.phone;
+            document.getElementById('residentEmail').textContent = resident.email;
+            document.getElementById('residentUnit').textContent = resident.unit;
+            document.getElementById('residentOwnershipType').textContent = resident.ownershipType;
+            document.getElementById('registrationDate').textContent = resident.registered;
+
+            document.getElementById('residentDetailsModal').classList.add('active');
+        }
+
+        function editResident() {
+            alert('تم فتح نافذة التعديل (قيد التطوير)');
+        }
+
+        function deleteResident() {
+            if (confirm('هل أنت متأكد من حذف هذا الساكن؟')) {
+                alert('تم حذف الساكن بنجاح');
+                closeModal('residentDetailsModal');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            loadResidents();
+            updateStatistics();
+        });
+
+        function updateStatistics() {
+            const stats = dataManager.getStatistics();
+            document.querySelector('.stat-box:nth-child(1) .stat-number').textContent = stats.totalUnits;
+            document.querySelector('.stat-box:nth-child(2) .stat-number').textContent = stats.occupiedUnits;
+            document.querySelector('.stat-box:nth-child(3) .stat-number').textContent = stats.vacantUnits;
+            const occupancyRate = ((stats.occupiedUnits / stats.totalUnits) * 100).toFixed(1);
+            document.querySelector('.stat-box:nth-child(4) .stat-number').textContent = occupancyRate + '%';
+        }
+    </script>
+    
+    <!-- Auth & Admin Navigation Scripts -->
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin-navigation.js"></script>
+    
+    <script>
+        // حماية الصفحة - أدمن فقط
+        if (!protectAdminPage()) {
+            // سيتم إعادة التوجيه تلقائياً
+        }
+    </script>
+</body>
+</html>

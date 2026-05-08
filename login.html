@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --dark-bg: #0f172a;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .form-input {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #f1f5f9;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #6366f1, #10b981);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            margin: 0 auto 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-md w-full px-4">
+        <div class="glass-card p-8">
+            <div class="logo floating">
+                <i class="fas fa-building"></i>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-center mb-2">بوابة الهدى الرقمية</h1>
+            <p class="text-center text-slate-400 mb-8">مرحباً بك في نظام إدارة البرج</p>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-2">رقم الوحدة</label>
+                    <div class="relative">
+                        <i class="fas fa-home absolute right-4 top-1/2 transform -translate-y-1/2 text-indigo-500"></i>
+                        <input type="text" id="unitNumber" placeholder="مثال: 304" class="form-input pr-12" required>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-2">كلمة المرور</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute right-4 top-1/2 transform -translate-y-1/2 text-indigo-500"></i>
+                        <input type="password" id="password" placeholder="••••••••" class="form-input pr-12" required>
+                        <button type="button" onclick="togglePassword()" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white">
+                            <i class="fas fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="ml-2">
+                        <span class="text-sm text-slate-400">تذكرني</span>
+                    </label>
+                    <a href="#" class="text-sm text-indigo-400 hover:underline">نسيت كلمة المرور؟</a>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-sign-in-alt ml-2"></i> تسجيل الدخول
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-slate-400">
+                    لا تملك حساب؟ 
+                    <button onclick="openContactModal()" class="text-indigo-400 hover:underline font-bold bg-transparent border-none cursor-pointer">تواصل مع الإدارة</button>
+                </p>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-white/10">
+                <div class="bg-indigo-600/10 border border-indigo-600/30 rounded-lg p-4 mb-4">
+                    <p class="text-sm font-bold text-indigo-400 mb-2">
+                        <i class="fas fa-info-circle ml-1"></i> بيانات تجريبية للدخول:
+                    </p>
+                    <div class="text-xs text-slate-300 space-y-1">
+                        <p><strong>مستخدم عادي:</strong> رقم الوحدة: <code class="bg-slate-800 px-2 py-1 rounded">304</code> | كلمة المرور: <code class="bg-slate-800 px-2 py-1 rounded">123456</code></p>
+                        <p><strong>مدير النظام:</strong> رقم الوحدة: <code class="bg-slate-800 px-2 py-1 rounded">admin</code> | كلمة المرور: <code class="bg-slate-800 px-2 py-1 rounded">admin123</code></p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-4 text-slate-400">
+                    <a href="#" class="hover:text-indigo-400 transition">
+                        <i class="fas fa-phone"></i>
+                    </a>
+                    <a href="#" class="hover:text-indigo-400 transition">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="#" class="hover:text-indigo-400 transition">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-6 text-slate-400 text-sm">
+            <p>© 2026 بوابة الهدى الرقمية. جميع الحقوق محفوظة.</p>
+        </div>
+    </div>
+
+    <!-- Contact Admin Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">طلب تسجيل جديد</h3>
+                <button onclick="closeContactModal()" class="text-2xl text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <p class="text-slate-400 text-sm mb-6">برجاء إدخال بياناتك وسيقوم مسئول الإدارة بالتواصل معك لتفعيل الحساب.</p>
+
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-slate-400">الاسم الكامل</label>
+                        <input type="text" id="contactName" placeholder="مثال: أحمد محمد علي" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-slate-400">رقم الوحدة</label>
+                        <input type="text" id="contactUnit" placeholder="مثال: 304" class="form-input" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-2 text-slate-400">رقم الهاتف (واتساب)</label>
+                        <input type="tel" id="contactPhone" placeholder="01xxxxxxxxx" class="form-input" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary mt-8">
+                    <i class="fas fa-paper-plane ml-2"></i> إرسال الطلب
+                </button>
+            </form>
+            
+            <div class="mt-6 pt-6 border-t border-white/10 text-center">
+                <p class="text-xs text-slate-500 mb-3">أو تواصل مباشرة عبر:</p>
+                <div class="flex justify-center gap-6">
+                    <a href="https://wa.me/201234567890" target="_blank" class="text-emerald-400 hover:scale-110 transition-transform">
+                        <i class="fab fa-whatsapp text-3xl"></i>
+                    </a>
+                    <a href="tel:01234567890" class="text-indigo-400 hover:scale-110 transition-transform">
+                        <i class="fas fa-phone-alt text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication System -->
+    <script src="js/auth.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/theme.js"></script>
+    
+    <script>
+        function openContactModal() {
+            document.getElementById('contactModal').classList.add('active');
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.remove('active');
+        }
+
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('contactName').value;
+            const unit = document.getElementById('contactUnit').value;
+            const phone = document.getElementById('contactPhone').value;
+
+            // محاكاة إرسال الطلب
+            notifySuccess(`شكراً لك يا ${name.split(' ')[0]}، تم إرسال طلبك للإدارة.`);
+            
+            // تسجيل الطلب في الكونسول للمعاينة
+            console.log('Registration Request:', { name, unit, phone, date: new Date() });
+            
+            setTimeout(() => {
+                closeContactModal();
+                document.getElementById('contactForm').reset();
+            }, 2000);
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const unitNumber = document.getElementById('unitNumber').value;
+            const password = document.getElementById('password').value;
+
+            // استخدام نظام المصادقة الجديد
+            const result = loginUser(unitNumber, password);
+            
+            if (result.success) {
+                // إشعار نجاح تسجيل الدخول
+                const userName = result.isAdmin ? 'المسئول' : `الوحدة ${unitNumber}`;
+                notifyLoginSuccess(userName);
+                
+                // الانتظار قليلاً لعرض الإشعار ثم التوجيه
+                setTimeout(() => {
+                    if (result.isAdmin) {
+                        window.location.href = 'pages/admin-dashboard.html';
+                    } else {
+                        window.location.href = 'pages/user-dashboard.html';
+                    }
+                }, 1200);
+            } else {
+                notifyError(result.message || 'رقم الوحدة أو كلمة المرور غير صحيحة');
+            }
+        }
+
+        // التحقق من تسجيل الدخول المسبق
+        if (sessionStorage.getItem('loggedIn') === 'true') {
+            const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+            if (isAdmin) {
+                window.location.href = 'pages/admin-dashboard.html';
+            } else {
+                window.location.href = 'pages/user-dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

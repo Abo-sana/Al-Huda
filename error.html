@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خطأ | بوابة الهدى الرقمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .error-container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            max-width: 600px;
+            margin: 20px;
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            color: #ef4444;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(99, 102, 241, 0.2);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <i class="fas fa-exclamation-triangle error-icon"></i>
+        <div class="error-code" id="errorCode">404</div>
+        <h1 class="text-3xl font-bold text-white mb-4" id="errorTitle">عذراً، الصفحة غير موجودة</h1>
+        <p class="text-slate-300 mb-8" id="errorMessage">
+            الصفحة التي تبحث عنها غير موجودة أو تم نقلها إلى موقع آخر.
+        </p>
+        
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="/login.html" class="btn">
+                <i class="fas fa-home ml-2"></i>
+                العودة للصفحة الرئيسية
+            </a>
+            <button onclick="history.back()" class="btn btn-secondary">
+                <i class="fas fa-arrow-right ml-2"></i>
+                العودة للخلف
+            </button>
+        </div>
+        
+        <div class="mt-8 text-slate-400 text-sm">
+            <p>إذا كنت تعتقد أن هذا خطأ، يرجى الاتصال بالدعم الفني</p>
+            <p class="mt-2">
+                <i class="fas fa-phone ml-2"></i> 0123456789
+                <span class="mx-4">|</span>
+                <i class="fas fa-envelope ml-2"></i> info@alhuda.com
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // تحديد نوع الخطأ من URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorType = urlParams.get('error') || '404';
+        
+        const errorMessages = {
+            '400': {
+                title: 'طلب غير صحيح',
+                message: 'الطلب الذي أرسلته غير صحيح أو غير مكتمل.',
+                icon: 'fa-times-circle'
+            },
+            '401': {
+                title: 'غير مصرح',
+                message: 'يجب عليك تسجيل الدخول للوصول إلى هذه الصفحة.',
+                icon: 'fa-lock'
+            },
+            '403': {
+                title: 'ممنوع الوصول',
+                message: 'ليس لديك صلاحية للوصول إلى هذه الصفحة.',
+                icon: 'fa-ban'
+            },
+            '404': {
+                title: 'الصفحة غير موجودة',
+                message: 'الصفحة التي تبحث عنها غير موجودة أو تم نقلها إلى موقع آخر.',
+                icon: 'fa-exclamation-triangle'
+            },
+            '500': {
+                title: 'خطأ في الخادم',
+                message: 'حدث خطأ في الخادم. نعمل على إصلاحه في أقرب وقت.',
+                icon: 'fa-server'
+            }
+        };
+        
+        const error = errorMessages[errorType] || errorMessages['404'];
+        
+        document.getElementById('errorCode').textContent = errorType;
+        document.getElementById('errorTitle').textContent = error.title;
+        document.getElementById('errorMessage').textContent = error.message;
+        document.querySelector('.error-icon').className = `fas ${error.icon} error-icon`;
+    </script>
+</body>
+</html>
