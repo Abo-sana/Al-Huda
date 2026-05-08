@@ -246,9 +246,144 @@ function notifyMaintenanceReminder(type, date) {
     notifyWarning(`⏰ تذكير: صيانة ${type} غداً في ${date}`);
 }
 
-/**
- * إشعار تصويت جديد
- */
+// ====================================
+// نظام قائمة الإشعارات (Dropdown)
+// ====================================
+
+function toggleNotificationsDropdown(event) {
+    if (event) event.stopPropagation();
+    
+    let dropdown = document.getElementById('notificationsDropdown');
+    
+    if (dropdown) {
+        dropdown.classList.toggle('active');
+        return;
+    }
+    
+    // إنشاء القائمة إذا لم تكن موجودة
+    dropdown = document.createElement('div');
+    dropdown.id = 'notificationsDropdown';
+    dropdown.className = 'notifications-dropdown';
+    
+    // إضافة الستايل للقائمة
+    if (!document.getElementById('dropdownStyles')) {
+        const style = document.createElement('style');
+        style.id = 'dropdownStyles';
+        style.textContent = `
+            .notifications-dropdown {
+                position: absolute;
+                top: 60px;
+                left: 20px;
+                width: 320px;
+                background: #1e293b;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+                font-family: 'Cairo', sans-serif;
+            }
+            .notifications-dropdown.active {
+                display: flex;
+            }
+            .dropdown-header {
+                padding: 16px;
+                background: rgba(255, 255, 255, 0.03);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .dropdown-body {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .notification-item {
+                padding: 12px 16px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                display: flex;
+                gap: 12px;
+                transition: background 0.2s;
+                cursor: pointer;
+            }
+            .notification-item:hover {
+                background: rgba(99, 102, 241, 0.05);
+            }
+            .notification-item i {
+                margin-top: 4px;
+            }
+            .notification-content p {
+                margin: 0;
+                font-size: 13px;
+                color: #f1f5f9;
+            }
+            .notification-content span {
+                font-size: 10px;
+                color: #94a3b8;
+            }
+            .dropdown-footer {
+                padding: 12px;
+                text-align: center;
+                background: rgba(255, 255, 255, 0.03);
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .dropdown-footer a {
+                font-size: 12px;
+                color: #6366f1;
+                font-weight: bold;
+                text-decoration: none;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // جلب الإشعارات (بيانات تجريبية حالياً)
+    const notifications = [
+        { icon: 'fa-money-bill', color: '#10b981', title: 'دفعة جديدة من وحدة 304', time: 'منذ 5 دقائق' },
+        { icon: 'fa-exclamation-circle', color: '#f59e0b', title: 'شكوى جديدة من وحدة 205', time: 'منذ 15 دقيقة' },
+        { icon: 'fa-wrench', color: '#6366f1', title: 'صيانة مكتملة للمصعد رقم 1', time: 'منذ ساعة' },
+        { icon: 'fa-user-plus', color: '#8b5cf6', title: 'ساكن جديد في وحدة 102', time: 'منذ 3 ساعات' }
+    ];
+    
+    dropdown.innerHTML = `
+        <div class="dropdown-header">
+            <h4 class="font-bold text-sm">الإشعارات</h4>
+            <span class="text-[10px] bg-red-500 px-2 py-0.5 rounded-full font-bold">${notifications.length} جديد</span>
+        </div>
+        <div class="dropdown-body">
+            ${notifications.map(n => `
+                <div class="notification-item">
+                    <i class="fas ${n.icon}" style="color: ${n.color}"></i>
+                    <div class="notification-content">
+                        <p>${n.title}</p>
+                        <span>${n.time}</span>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        <div class="dropdown-footer">
+            <a href="#">مشاهدة الكل</a>
+        </div>
+    `;
+    
+    // إضافة القائمة لزر الجرس
+    const bellBtn = event.currentTarget;
+    bellBtn.style.position = 'relative';
+    bellBtn.appendChild(dropdown);
+    
+    // تفعيل القائمة
+    setTimeout(() => dropdown.classList.add('active'), 0);
+    
+    // إغلاق عند النقر في أي مكان آخر
+    document.addEventListener('click', function closeDropdown(e) {
+        if (!dropdown.contains(e.target) && e.target !== bellBtn) {
+            dropdown.classList.remove('active');
+            document.removeEventListener('click', closeDropdown);
+        }
+    });
+}
 function notifyNewVote(title) {
     notifyInfo(`🗳️ تصويت جديد: ${title}`);
 }

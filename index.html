@@ -127,8 +127,8 @@
                 <h2 class="text-4xl md:text-5xl font-black mb-6 leading-[1.2]">مرحباً بك في <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-emerald-400">بوابة الهدى الرقمية</span></h2>
                 <p class="text-slate-400 text-lg mb-8 leading-relaxed">المنصة المتكاملة لسكان برج الهدى - تواصل، سداد، ومتابعة فورية لجميع مرافق وخدمات البرج بضغطة زر واحدة.</p>
                 <div class="flex flex-wrap gap-4">
-                    <button onclick="window.location.href='pages/payments.html'" class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold shadow-xl shadow-indigo-600/20 transition-all active:scale-95">ابدأ الآن</button>
-                    <button onclick="window.location.href='pages/user-dashboard.html'" class="px-8 py-3.5 bg-white/5 hover:bg-white/10 rounded-2xl font-bold border border-white/10 transition-all">اكتشف الخدمات</button>
+                    <button onclick="handleStartNow()" class="px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold shadow-xl shadow-indigo-600/20 transition-all active:scale-95">ابدأ الآن</button>
+                    <button onclick="window.location.href='pages/payments.html'" class="px-8 py-3.5 bg-white/5 hover:bg-white/10 rounded-2xl font-bold border border-white/10 transition-all">اكتشف الخدمات</button>
                 </div>
             </div>
             <!-- Abstract background shape -->
@@ -355,6 +355,15 @@
             if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
                 sessionStorage.clear();
                 window.location.reload();
+            }
+        }
+
+        function handleStartNow() {
+            if (sessionStorage.getItem('loggedIn') === 'true') {
+                const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+                window.location.href = isAdmin ? 'pages/admin-dashboard.html' : 'pages/user-dashboard.html';
+            } else {
+                window.location.href = 'login.html';
             }
         }
 

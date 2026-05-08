@@ -742,11 +742,13 @@
         }
         
         function cancelMaintenance(id) {
-            if (confirm('هل أنت متأكد من إلغاء هذه الصيانة؟')) {
-                // In a real app, you would delete or update status
-                alert('تم إلغاء الصيانة');
-                loadData();
-                loadScheduled();
+            if (confirm('هل أنت متأكد من إلغاء طلب الصيانة هذا؟')) {
+                const index = maintenances.findIndex(m => m.id === id);
+                if (index !== -1) {
+                    maintenances.splice(index, 1);
+                    loadScheduled();
+                    notifySuccess('تم إلغاء الطلب بنجاح');
+                }
             }
         }
 
