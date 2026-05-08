@@ -71,18 +71,20 @@ function downloadCSV(content, filename) {
  */
 function convertToExcelHTML(data, columns, title = 'تقرير') {
     let html = `
-        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+        <html dir="rtl" lang="ar" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
         <head>
             <meta charset="utf-8">
             <style>
-                table { border-collapse: collapse; width: 100%; direction: rtl; }
-                th { background-color: #6366f1; color: white; padding: 12px; text-align: right; font-weight: bold; border: 1px solid #ddd; }
-                td { padding: 10px; text-align: right; border: 1px solid #ddd; }
-                tr:nth-child(even) { background-color: #f2f2f2; }
-                h2 { text-align: center; color: #6366f1; font-family: Arial; }
+                body { font-family: 'Arial', 'Cairo', sans-serif; direction: rtl; }
+                table { border-collapse: collapse; width: 100%; direction: rtl; border: 1px solid #ddd; }
+                th { background-color: #6366f1; color: white; padding: 15px; text-align: right; font-weight: bold; border: 1px solid #ddd; }
+                td { padding: 12px; text-align: right; border: 1px solid #ddd; }
+                tr:nth-child(even) { background-color: #f8fafc; }
+                h2 { text-align: center; color: #1e293b; font-size: 24px; margin-bottom: 20px; }
+                .footer { margin-top: 30px; text-align: center; color: #94a3b8; font-size: 12px; }
             </style>
         </head>
-        <body>
+        <body dir="rtl">
             <h2>${title}</h2>
             <table>
                 <thead>
@@ -105,6 +107,9 @@ function convertToExcelHTML(data, columns, title = 'تقرير') {
     html += `
                 </tbody>
             </table>
+            <div class="footer">
+                تم استخراج هذا التقرير من بوابة الهدى الرقمية بتاريخ ${new Date().toLocaleString('ar-EG')}
+            </div>
         </body>
         </html>
     `;

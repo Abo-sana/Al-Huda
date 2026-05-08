@@ -670,7 +670,7 @@
                         <h4 class="font-bold mb-4 text-lg">الطابق ${floor === 1 ? 'الأرضي' : floor}</h4>
                         <div class="floor-grid">
                             ${floorUnits.map(unit => `
-                                <div class="unit-card ${unit.status === 'vacant' ? 'vacant' : 'occupied'}" onclick="alert('الوحدة ${unit.id}')">
+                                <div class="unit-card ${unit.status === 'vacant' ? 'vacant' : 'occupied'}" onclick="openUnitDetails('${unit.id}')">
                                     <p class="font-bold text-lg">${unit.id}</p>
                                     <p class="text-xs text-slate-400 mt-1">${unit.type}</p>
                                     <span class="status-badge status-${unit.status === 'occupied' ? 'occupied' : unit.status === 'vacant' ? 'vacant' : 'for-rent'} text-xs mt-2 inline-block">
@@ -702,7 +702,7 @@
                         <td><span class="status-badge ${statusBadgeClass}">${statusText}</span></td>
                         <td>${unit.owner}</td>
                         <td>
-                            <button class="btn-small btn-info">
+                            <button class="btn-small btn-info" onclick="openUnitDetails('${unit.id}')">
                                 <i class="fas fa-eye ml-1"></i> عرض
                             </button>
                         </td>
@@ -710,6 +710,15 @@
                 `;
                 unitsTableBody.innerHTML += rowHTML;
             });
+        }
+
+        function openUnitDetails(unitId) {
+            const resident = residents.find(r => r.unit === unitId);
+            if (resident) {
+                openResidentDetails(resident.id);
+            } else {
+                alert(`الوحدة ${unitId} شاغرة حالياً.`);
+            }
         }
 
         function loadReport() {

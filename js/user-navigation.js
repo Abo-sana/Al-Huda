@@ -3,12 +3,19 @@
 
 /**
  * نظام التنقل الخاص بالمستخدم العادي فقط
- * لا يحتوي على صفحات الإدارة
  */
 
 // ====================================
-// قائمة التنقل للمستخدم
+// المساعدات
 // ====================================
+
+function getUserBasePath() {
+    const path = window.location.pathname;
+    if (path.includes('/pages/')) {
+        return './';
+    }
+    return 'pages/';
+}
 
 const userNavigationMenu = [
     {
@@ -44,12 +51,7 @@ const userNavigationMenu = [
     }
 ];
 
-// ====================================
-// إنشاء القائمة الجانبية
-// ====================================
-
 function createUserSidebar() {
-    // حذف القائمة القديمة إن وجدت
     const oldSidebar = document.getElementById('userNavigationSidebar');
     if (oldSidebar) oldSidebar.remove();
     
@@ -57,12 +59,11 @@ function createUserSidebar() {
     sidebar.id = 'userNavigationSidebar';
     sidebar.className = 'fixed right-0 top-0 h-full w-80 bg-slate-900 border-l border-white/10 transform translate-x-full transition-transform duration-300 z-[100] shadow-2xl shadow-black/50';
     
-    const basePath = getBasePath();
-    const user = getCurrentUser();
+    const basePath = getUserBasePath();
+    const unitNumber = sessionStorage.getItem('unitNumber') || '---';
     
     let menuHTML = `
         <div class="flex flex-col h-full bg-[#0f172a]">
-            <!-- Header -->
             <div class="p-6 border-b border-white/5 bg-slate-900/50">
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center gap-4">
@@ -71,7 +72,7 @@ function createUserSidebar() {
                         </div>
                         <div>
                             <h2 class="text-xl font-black text-white leading-none">مرحباً</h2>
-                            <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-2">الوحدة ${user.unitNumber}</p>
+                            <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mt-2">الوحدة ${unitNumber}</p>
                         </div>
                     </div>
                     <button onclick="toggleUserSidebar()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all">
@@ -79,14 +80,11 @@ function createUserSidebar() {
                     </button>
                 </div>
             </div>
-            
-            <!-- Menu Items -->
             <div class="flex-1 overflow-y-auto p-4 space-y-2">
     `;
     
     userNavigationMenu.forEach(item => {
-        const badgeHTML = item.badge ? 
-            `<span class="text-[9px] px-2 py-0.5 bg-indigo-600 text-white rounded-full font-black uppercase ml-2">${item.badge}</span>` : '';
+        const badgeHTML = item.badge ? `<span class="text-[9px] px-2 py-0.5 bg-indigo-600 text-white rounded-full font-black ml-2">${item.badge}</span>` : '';
         const url = basePath + item.page;
         const isActive = window.location.pathname.includes(item.page);
         const activeClass = isActive ? 'bg-indigo-600/10 border-indigo-500/50' : 'border-transparent hover:bg-white/5';
@@ -99,10 +97,10 @@ function createUserSidebar() {
                     </div>
                     <div class="flex-1">
                         <div class="flex items-center">
-                            <span class="font-bold text-slate-200 group-hover:text-white transition-colors">${item.name}</span>
+                            <span class="font-bold text-slate-200 group-hover:text-white transition-colors text-sm">${item.name}</span>
                             ${badgeHTML}
                         </div>
-                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 transition-colors mt-1">${item.description}</p>
+                        <p class="text-[10px] text-slate-500 group-hover:text-slate-400 mt-1">${item.description}</p>
                     </div>
                     <i class="fas fa-chevron-left text-slate-700 group-hover:text-indigo-500 text-xs transition-all transform group-hover:-translate-x-1"></i>
                 </div>
@@ -112,19 +110,10 @@ function createUserSidebar() {
     
     menuHTML += `
             </div>
-            
-            <!-- Footer -->
-            <div class="p-4 border-t border-indigo-500/20 space-y-2">
-                <div class="p-3 bg-indigo-600/10 rounded-lg border border-indigo-500/20">
-                    <div class="flex items-center gap-2 text-sm">
-                        <i class="fas fa-info-circle text-indigo-400"></i>
-                        <span class="text-slate-300">للمساعدة: 0123456789</span>
-                    </div>
-                </div>
-                
-                <button onclick="logout()" class="w-full flex items-center justify-center gap-3 p-3 rounded-lg bg-red-600/20 hover:bg-red-600/40 transition-all text-red-400 border border-red-500/20 hover:border-red-500/40">
+            <div class="p-4 border-t border-white/5 bg-slate-900/50 space-y-2">
+                <button onclick="logout()" class="w-full flex items-center justify-center gap-3 p-3 rounded-xl bg-red-600/10 hover:bg-red-600/20 transition-all text-red-400 border border-red-500/20">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span class="font-bold">تسجيل الخروج</span>
+                    <span class="font-bold text-sm">تسجيل الخروج</span>
                 </button>
             </div>
         </div>
@@ -134,114 +123,51 @@ function createUserSidebar() {
     document.body.appendChild(sidebar);
 }
 
-// ====================================
-// زر القائمة
-// ====================================
-
 function createUserMenuButton() {
-    // حذف الزر القديم إن وجد
     const oldButton = document.getElementById('userMenuButton');
     if (oldButton) oldButton.remove();
     
     const menuButton = document.createElement('button');
     menuButton.id = 'userMenuButton';
-    menuButton.className = 'fixed right-4 bottom-4 z-50 w-16 h-16 bg-gradient-to-br from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-indigo-500/50 transition-all hover:scale-110';
-    menuButton.innerHTML = `
-        <div class="text-center">
-            <i class="fas fa-bars text-white text-2xl"></i>
-        </div>
-    `;
+    menuButton.className = 'fixed right-4 bottom-4 z-50 w-16 h-16 bg-indigo-600 hover:bg-indigo-500 rounded-full flex items-center justify-center shadow-2xl transition-all hover:scale-110';
+    menuButton.innerHTML = `<i class="fas fa-bars text-white text-2xl"></i>`;
     menuButton.onclick = toggleUserSidebar;
-    
-    // إضافة تلميح
-    menuButton.title = 'القائمة - اضغط للتنقل';
-    
     document.body.appendChild(menuButton);
 }
 
-// ====================================
-// التحكم في القائمة
-// ====================================
-
-function toggleUserSidebar() {
-    const sidebar = document.getElementById('userNavigationSidebar');
-    if (sidebar) {
-        sidebar.classList.toggle('translate-x-full');
-    }
-}
-
-function closeUserSidebar() {
-    const sidebar = document.getElementById('userNavigationSidebar');
-    if (sidebar && !sidebar.classList.contains('translate-x-full')) {
-        sidebar.classList.add('translate-x-full');
-    }
-}
-
-// ====================================
-// التهيئة
-// ====================================
-
-function initUserNavigation() {
-    // التحقق من أن المستخدم ليس أدمن
-    if (isAdmin()) {
-        console.warn('User navigation loaded for admin user');
-        return;
-    }
-    
-    createUserSidebar();
-    createUserMenuButton();
-    createBackButton(); // إضافة زر الرجوع
-}
-
-// ====================================
-// زر الرجوع
-// ====================================
-
-function createBackButton() {
-    // حذف الزر القديم إن وجد
-    const oldButton = document.getElementById('backButton');
+function createUserBackButton() {
+    const oldButton = document.getElementById('userBackButton');
     if (oldButton) oldButton.remove();
     
     const backButton = document.createElement('button');
-    backButton.id = 'backButton';
-    backButton.className = 'fixed left-4 bottom-4 z-50 w-14 h-14 bg-slate-800/90 hover:bg-slate-700 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 border border-slate-600';
-    backButton.innerHTML = `
-        <i class="fas fa-home text-white text-xl"></i>
-    `;
-    backButton.onclick = () => {
-        window.location.href = './user-dashboard.html';
-    };
-    backButton.title = 'الرئيسية';
+    backButton.id = 'userBackButton';
+    backButton.className = 'fixed left-4 bottom-4 z-50 w-14 h-14 bg-slate-800/90 hover:bg-slate-700 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 border border-white/10';
+    backButton.innerHTML = `<i class="fas fa-home text-white text-xl"></i>`;
+    backButton.onclick = () => window.location.href = getUserBasePath() + 'user-dashboard.html';
     
-    // إخفاء الزر في لوحة التحكم
-    if (window.location.pathname.includes('user-dashboard.html')) {
-        backButton.style.display = 'none';
-    }
-    
+    if (window.location.pathname.includes('user-dashboard.html')) backButton.style.display = 'none';
     document.body.appendChild(backButton);
 }
 
-// ====================================
-// إغلاق القائمة عند النقر خارجها
-// ====================================
-
-document.addEventListener('click', function(event) {
+function toggleUserSidebar() {
     const sidebar = document.getElementById('userNavigationSidebar');
-    const menuButton = document.getElementById('userMenuButton');
-    
-    if (sidebar && menuButton) {
-        const clickedInsideSidebar = sidebar.contains(event.target);
-        const clickedMenuButton = menuButton.contains(event.target);
-        
-        if (!clickedInsideSidebar && !clickedMenuButton) {
-            closeUserSidebar();
-        }
+    if (sidebar) sidebar.classList.toggle('translate-x-full');
+}
+
+function initUserNavigation() {
+    if (isAdmin()) return;
+    createUserSidebar();
+    createUserMenuButton();
+    createUserBackButton();
+}
+
+document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('userNavigationSidebar');
+    const btn = document.getElementById('userMenuButton');
+    if (sidebar && btn && !sidebar.contains(e.target) && !btn.contains(e.target)) {
+        sidebar.classList.add('translate-x-full');
     }
 });
-
-// ====================================
-// التشغيل التلقائي
-// ====================================
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initUserNavigation);

@@ -193,3 +193,44 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(99, 102, 241, 0.8);
 }
+
+/* Print Styles */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+        direction: rtl !important;
+        font-family: 'Cairo', 'Arial', sans-serif !important;
+    }
+    
+    .glass-card, .admin-card, .stat-box {
+        background: white !important;
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        color: black !important;
+        page-break-inside: avoid;
+    }
+    
+    .btn-primary, .btn-secondary, .quick-action-btn, nav, .sidebar {
+        display: none !important; /* إخفاء الأزرار والقوائم عند الطباعة */
+    }
+    
+    .text-indigo-400, .text-emerald-400, .text-red-400, .stat-number {
+        color: black !important;
+        background: none !important;
+        -webkit-text-fill-color: initial !important;
+    }
+    
+    table {
+        width: 100% !important;
+        direction: rtl !important;
+        border-collapse: collapse !important;
+    }
+    
+    th, td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+        text-align: right !important;
+    }
+}
